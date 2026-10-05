@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    ignore:
+      # loaded from the host, a newer reference fails to bind on older 12.x servers.
+      # Bump only together with targetAbi
+      - dependency-name: Jellyfin.Controller
+      - dependency-name: Jellyfin.Model
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5

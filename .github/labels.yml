@@ -1,0 +1,34 @@
+- name: breaking
+  color: 'B60205'
+  description: Changes an existing behaviour in a way that needs attention
+- name: enhancement
+  color: '164916'
+  description: Adds a feature
+  aliases:
+    - feature
+- name: bug
+  color: 'd73a4a'
+  description: Something does not work
+  aliases:
+    - fix
+    - regression
+- name: documentation
+  color: '006699'
+  description: Documentation only
+- name: dependencies
+  color: '1D76DB'
+  description: Updates a dependency
+- name: ci
+  color: 'FFFF09'
+  description: Workflows and repository plumbing
+  aliases:
+    - build
+- name: chore
+  color: '36566F'
+  description: Maintenance with no user facing effect
+- name: release-prep
+  color: 'e0e0e0'
+  description: Generated pull request that bumps the version and the changelog
+- name: skip-changelog
+  color: 'e0e0e0'
+  description: Left out of the release draft

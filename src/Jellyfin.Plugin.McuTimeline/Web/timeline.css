@@ -1,0 +1,677 @@
+/* fallbacks match the default Jellyfin dark theme, timeline.js copies the live
+   --jf-palette-* values of the web client over them when they exist */
+:root {
+    --bg: #101010;
+    --paper: #202020;
+    --accent: #00a4dc;
+    --accent-contrast: #fff;
+    --text: rgba(255, 255, 255, .87);
+    --text-dim: rgba(255, 255, 255, .6);
+    --divider: rgba(255, 255, 255, .12);
+    --line: rgba(255, 255, 255, .18);
+    --font: "Noto Sans", "Noto Sans HK", "Noto Sans JP", "Noto Sans KR", "Noto Sans SC", "Noto Sans TC", sans-serif;
+    --radius: .5rem;
+    --poster-w: 6.5rem;
+    --gutter: 2rem;
+    --move: 250ms;
+    color-scheme: dark;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* controls */
+
+.controls {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    padding: 1rem 1rem .9rem;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--divider);
+}
+
+.controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem 1.25rem;
+    max-width: 72rem;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.segmented {
+    display: inline-flex;
+    padding: .2rem;
+    border-radius: 999px;
+    background: var(--paper);
+}
+
+.segmented button {
+    border: 0;
+    border-radius: 999px;
+    padding: .4rem .95rem;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.segmented button:hover {
+    color: var(--text);
+}
+
+.segmented button[aria-checked="true"] {
+    background: var(--accent);
+    color: var(--accent-contrast);
+}
+
+.switch {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    cursor: pointer;
+    color: var(--text-dim);
+}
+
+.switch input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.switch-track {
+    position: relative;
+    flex: none;
+    width: 2.4rem;
+    height: 1.35rem;
+    border-radius: 999px;
+    background: var(--divider);
+    transition: background-color .15s;
+}
+
+.switch-track::after {
+    content: "";
+    position: absolute;
+    top: .2rem;
+    left: .2rem;
+    width: .95rem;
+    height: .95rem;
+    border-radius: 50%;
+    background: var(--text);
+    transition: transform .15s;
+}
+
+.switch input:checked + .switch-track {
+    background: var(--accent);
+}
+
+.switch input:checked + .switch-track::after {
+    transform: translateX(1.05rem);
+}
+
+.switch input:focus-visible + .switch-track {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.counter {
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+}
+
+.button-accent {
+    margin-left: auto;
+    border: 0;
+    border-radius: 999px;
+    padding: .45rem 1.1rem;
+    background: var(--paper);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.button-accent:hover {
+    background: var(--divider);
+}
+
+/* messages */
+
+main {
+    padding: 1.5rem 1rem 4rem;
+}
+
+.message {
+    max-width: 40rem;
+    margin: 3rem auto;
+    text-align: center;
+    color: var(--text-dim);
+}
+
+.message:empty {
+    display: none;
+}
+
+.message button,
+.message a {
+    display: inline-block;
+    margin-top: 1rem;
+    border: 0;
+    border-radius: 999px;
+    padding: .45rem 1.1rem;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    transform: translate(-50%, 1rem);
+    padding: .6rem 1.1rem;
+    border-radius: var(--radius);
+    background: var(--paper);
+    box-shadow: 0 .4rem 1.5rem rgba(0, 0, 0, .5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+}
+
+.toast.visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* timeline, mobile first: line on the left, compact cards */
+
+.timeline {
+    position: relative;
+    list-style: none;
+    margin: 0 auto;
+    padding: 0 0 0 var(--gutter);
+    max-width: 72rem;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--gutter) / 2 - 1px);
+    width: 2px;
+    background: var(--line);
+}
+
+.separator {
+    position: relative;
+    margin: 2rem 0 1rem;
+}
+
+.separator:first-child {
+    margin-top: 0;
+}
+
+.separator h2,
+.separator h3 {
+    display: inline-block;
+    margin: 0;
+    padding: .2rem .8rem;
+    border-radius: 999px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    font-weight: 600;
+    position: relative;
+    left: calc(var(--gutter) / -2);
+    transform: translateX(-.8rem);
+}
+
+.separator h2 {
+    font-size: 1.05rem;
+}
+
+.separator h3 {
+    font-size: .85rem;
+    color: var(--text-dim);
+}
+
+.separator .range {
+    margin-left: .5rem;
+    font-weight: 400;
+    color: var(--text-dim);
+}
+
+.entry {
+    position: relative;
+    margin: 0 0 1rem;
+}
+
+.dot {
+    position: absolute;
+    top: 1.4rem;
+    left: calc(var(--gutter) / -2 - .4rem);
+    width: .8rem;
+    height: .8rem;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--line);
+}
+
+.entry.status-owned .dot {
+    background: var(--text-dim);
+    border-color: var(--text-dim);
+}
+
+.entry.current .dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.card {
+    position: relative;
+    max-width: 36rem;
+    display: flex;
+    gap: .9rem;
+    padding: .6rem;
+    border-radius: var(--radius);
+    background: var(--paper);
+    transition: box-shadow .15s, background-color .15s;
+}
+
+.entry.current .card {
+    box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.status-owned .card {
+    cursor: pointer;
+}
+
+.status-owned .card:hover {
+    background: color-mix(in srgb, var(--paper) 85%, white);
+}
+
+.status-owned .card:hover .poster {
+    box-shadow: 0 .4rem 1.2rem rgba(0, 0, 0, .55);
+}
+
+.status-absent .card,
+.status-upcoming .card {
+    opacity: .55;
+}
+
+.poster {
+    position: relative;
+    flex: none;
+    width: var(--poster-w);
+    aspect-ratio: 2 / 3;
+    border-radius: calc(var(--radius) - .1rem);
+    overflow: hidden;
+    background: color-mix(in srgb, var(--paper) 70%, black);
+    transition: box-shadow .15s;
+}
+
+.poster img,
+.poster .silhouette {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.silhouette {
+    color: var(--divider);
+}
+
+.status-icon {
+    position: absolute;
+    top: .3rem;
+    right: .3rem;
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .7);
+    color: #fff;
+}
+
+.status-icon svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: .25rem;
+    background: rgba(0, 0, 0, .6);
+}
+
+.progress span {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+}
+
+.upcoming-badge {
+    position: absolute;
+    left: .3rem;
+    right: .3rem;
+    bottom: .3rem;
+    padding: .15rem .3rem;
+    border-radius: .25rem;
+    background: rgba(0, 0, 0, .75);
+    color: #fff;
+    font-size: .7rem;
+    text-align: center;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    min-width: 0;
+    flex: 1;
+    padding: .2rem 0;
+}
+
+.title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    margin: 0;
+    font-size: .85rem;
+    color: var(--text-dim);
+}
+
+.phase {
+    padding: .05rem .5rem;
+    border-radius: 999px;
+    border: 1px solid var(--divider);
+    font-size: .75rem;
+}
+
+.saga-multiverse .phase {
+    background: rgba(255, 255, 255, .06);
+}
+
+/* beyond title, year and phase, details wait for hover or focus */
+.details {
+    display: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: .8rem;
+    color: var(--text-dim);
+}
+
+.card:hover .details,
+.card:focus-within .details {
+    display: block;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: auto;
+}
+
+.play {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    border: 0;
+    border-radius: 999px;
+    padding: .3rem .85rem .3rem .6rem;
+    background: var(--divider);
+    cursor: pointer;
+    font-size: .85rem;
+}
+
+.play:hover {
+    background: var(--accent);
+    color: var(--accent-contrast);
+}
+
+.play svg {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.note {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: help;
+}
+
+.note svg {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.note .tooltip {
+    position: absolute;
+    bottom: calc(100% + .4rem);
+    left: 50%;
+    z-index: 5;
+    width: max-content;
+    max-width: 16rem;
+    transform: translateX(-50%);
+    padding: .45rem .65rem;
+    border-radius: .3rem;
+    background: #000;
+    color: #fff;
+    font-size: .8rem;
+    text-align: left;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .12s;
+}
+
+.note:hover .tooltip,
+.note:focus-visible .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* the note stays reachable on cards made translucent */
+.status-absent .card:hover,
+.status-upcoming .card:hover,
+.status-absent .card:focus-within,
+.status-upcoming .card:focus-within {
+    opacity: .8;
+}
+
+@media (max-width: 639px) {
+    :root {
+        --poster-w: 3.6rem;
+        --gutter: 1.6rem;
+    }
+
+    .controls-row {
+        gap: .6rem;
+    }
+
+    .segmented button {
+        padding: .35rem .7rem;
+        font-size: .9rem;
+    }
+
+    .button-accent {
+        margin-left: 0;
+    }
+
+    .card {
+        gap: .7rem;
+        padding: .45rem;
+    }
+
+    .title {
+        font-size: .95rem;
+    }
+
+    .phase,
+    .details,
+    .note,
+    .upcoming-badge {
+        display: none !important;
+    }
+
+    .play span {
+        display: none;
+    }
+
+    .play {
+        padding: .35rem;
+    }
+
+    .dot {
+        top: 1rem;
+    }
+}
+
+@media (min-width: 640px) {
+    :root {
+        --poster-w: 6rem;
+    }
+}
+
+/* desktop: central line, cards alternating left and right */
+@media (min-width: 1025px) {
+    :root {
+        --poster-w: 7rem;
+    }
+
+    .timeline {
+        padding-left: 0;
+    }
+
+    .timeline::before {
+        left: calc(50% - 1px);
+    }
+
+    .separator {
+        text-align: center;
+    }
+
+    .separator h2,
+    .separator h3 {
+        left: 0;
+        transform: none;
+    }
+
+    .entry {
+        width: 50%;
+    }
+
+    .entry.side-left {
+        padding-right: var(--gutter);
+    }
+
+    .entry.side-right {
+        margin-left: 50%;
+        padding-left: var(--gutter);
+    }
+
+    .entry.side-left .dot {
+        left: auto;
+        right: -.4rem;
+    }
+
+    .entry.side-right .dot {
+        left: -.4rem;
+    }
+
+    .entry.side-left .card {
+        flex-direction: row-reverse;
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .card {
+        max-width: 30rem;
+    }
+
+    .entry.side-left .meta,
+    .entry.side-left .actions {
+        justify-content: flex-end;
+    }
+
+    /* pull each card up so the two columns interleave instead of stacking */
+    .entry + .entry {
+        margin-top: -5rem;
+    }
+}
+
+.moving {
+    transition: transform var(--move) ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}

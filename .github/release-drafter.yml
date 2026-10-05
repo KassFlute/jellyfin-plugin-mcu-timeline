@@ -1,0 +1,61 @@
+# Drafts the next release from the pull requests merged since the last one. The categories
+# come from the labels, so a pull request that carries none lands in the flat list.
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+# Jellyfin plugin versions are four numbers, the fourth one is never used here
+version-template: '$MAJOR.$MINOR.$PATCH.0'
+category-template: '### $TITLE'
+
+categories:
+  - title: 'Breaking changes'
+    labels:
+      - breaking
+  - title: 'Features'
+    labels:
+      - feature
+      - enhancement
+  - title: 'Bug fixes'
+    labels:
+      - bug
+      - fix
+      - regression
+  - title: 'Documentation'
+    labels:
+      - documentation
+  - title: 'Dependencies'
+    labels:
+      - dependencies
+  - title: 'CI and repository'
+    labels:
+      - ci
+      - chore
+
+exclude-labels:
+  - skip-changelog
+  - invalid
+
+version-resolver:
+  major:
+    labels:
+      - breaking
+  minor:
+    labels:
+      - feature
+      - enhancement
+  default: patch
+
+autolabeler:
+  - label: ci
+    files:
+      - '.github/**'
+  - label: documentation
+    files:
+      - '**/*.md'
+  - label: bug
+    title:
+      - '/^fix/i'
+
+template: |-
+  $CHANGES
+
+  Update from the plugin repository in the Jellyfin dashboard. The zip is for a manual install.

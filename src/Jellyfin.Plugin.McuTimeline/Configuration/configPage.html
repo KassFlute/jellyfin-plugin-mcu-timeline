@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>MCU Timeline</title>
+</head>
+<body>
+<div id="McuTimelineConfigPage" data-role="page" class="page type-interior pluginConfigurationPage"
+     data-require="emby-input,emby-button,emby-checkbox,emby-select">
+    <style>
+        .mcuTable { width: 100%; border-collapse: collapse; }
+        .mcuTable th { text-align: left; padding: .4em .8em .4em 0; font-weight: 600; }
+        .mcuTable td { padding: .5em .8em .5em 0; }
+        .mcuTable tr + tr td { border-top: 1px solid rgba(255, 255, 255, .12); }
+        .mcuFacts { display: grid; grid-template-columns: max-content 1fr; gap: .4em 1.2em; margin: 0; }
+        .mcuFacts dt { opacity: .7; }
+        .mcuFacts dd { margin: 0; word-break: break-all; }
+        .mcuError { color: #ff6b6b; }
+        .mcuActions { display: flex; flex-wrap: wrap; gap: .6em; margin-top: 1.2em; }
+        .mcuActions .emby-button { margin: 0; }
+        .mcuLibraries { margin-left: 2em; }
+        .mcuSnippet { display: block; padding: .8em; border-radius: .3em; background: rgba(0, 0, 0, .35); white-space: pre-wrap; word-break: break-all; }
+    </style>
+
+    <div data-role="content">
+        <div class="content-primary">
+
+            <div class="verticalSection">
+                <div class="sectionTitleContainer flex align-items-center">
+                    <h2 class="sectionTitle">État</h2>
+                </div>
+                <dl class="mcuFacts">
+                    <dt>Données</dt><dd id="McuDataVersion">…</dd>
+                    <dt>Surcharge locale</dt><dd id="McuOverridePath">…</dd>
+                    <dt>Titres trouvés</dt><dd id="McuFound">…</dd>
+                    <dt>Dernière synchronisation</dt><dd id="McuLastSync">…</dd>
+                </dl>
+                <p id="McuOverrideError" class="mcuError" hidden></p>
+                <p id="McuSyncError" class="mcuError" hidden></p>
+                <div class="mcuActions">
+                    <button is="emby-button" type="button" id="McuSyncButton" class="raised button-submit emby-button">
+                        <span>Synchroniser les playlists maintenant</span>
+                    </button>
+                    <button is="emby-button" type="button" id="McuOpenButton" class="raised emby-button">
+                        <span>Ouvrir la timeline</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="verticalSection">
+                <div class="sectionTitleContainer flex align-items-center">
+                    <h2 class="sectionTitle">Titres non trouvés</h2>
+                </div>
+                <p id="McuMissingEmpty" hidden>Tous les titres sortis sont dans la bibliothèque.</p>
+                <table class="mcuTable" id="McuMissingTable" hidden>
+                    <thead><tr><th>Titre</th><th>Type</th><th>tmdbId</th><th>imdbId</th></tr></thead>
+                    <tbody id="McuMissing"></tbody>
+                </table>
+                <div class="fieldDescription">Le rapprochement se fait par tmdbId, puis imdbId. Corrigez les identifiants dans les métadonnées de l'élément, puis synchronisez.</div>
+            </div>
+
+            <form id="McuSettingsForm" class="verticalSection">
+                <div class="sectionTitleContainer flex align-items-center">
+                    <h2 class="sectionTitle">Réglages</h2>
+                </div>
+
+                <div class="checkboxContainer">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="McuAllLibraries">
+                        <span>Toutes les bibliothèques Films et Séries</span>
+                    </label>
+                </div>
+                <div id="McuLibraries" class="mcuLibraries"></div>
+
+                <div class="checkboxContainer">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="McuIncludeShorts">
+                        <span>Inclure les courts-métrages</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="McuIncludeUpcoming">
+                        <span>Inclure les titres à venir</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="McuEnablePlaylists">
+                        <span>Activer les playlists</span>
+                    </label>
+                </div>
+
+                <div class="selectContainer">
+                    <select is="emby-select" id="McuOwner" label="Propriétaire des playlists"></select>
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="text" id="McuReleaseName" label="Nom de la playlist en ordre de sortie" required>
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="text" id="McuChronoName" label="Nom de la playlist en ordre chronologique" required>
+                </div>
+
+                <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                    <span>Enregistrer</span>
+                </button>
+            </form>
+
+            <div class="verticalSection">
+                <div class="sectionTitleContainer flex align-items-center">
+                    <h2 class="sectionTitle">Onglet Custom Tabs</h2>
+                </div>
+                <p>Dans les réglages de Custom Tabs, créez un onglet « MCU » avec ce contenu HTML :</p>
+                <code class="mcuSnippet" id="McuSnippet"></code>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        (function () {
+            var pluginId = '7de48f79-4cdb-453f-8ce9-bd22c9e84f6a';
+            var page = document.querySelector('#McuTimelineConfigPage');
+            var $ = function (id) { return page.querySelector('#' + id); };
+
+            function escapeHtml(text) {
+                var div = document.createElement('div');
+                div.textContent = text == null ? '' : String(text);
+                return div.innerHTML;
+            }
+
+            function formatDate(iso) {
+                if (!iso) {
+                    return 'jamais';
+                }
+                // the server sends UTC without a zone marker
+                var date = new Date(/Z|[+-]\d\d:\d\d$/.test(iso) ? iso : iso + 'Z');
+                return date.toLocaleString('fr-FR');
+            }
+
+            function describeError(error) {
+                return error && error.status ? 'HTTP ' + error.status : String(error);
+            }
+
+            function showStatus(status) {
+                $('McuDataVersion').textContent = status.DataVersion
+                    + (status.DataSource === 'override' ? ' (surcharge locale)' : ' (embarquées)');
+                $('McuOverridePath').textContent = status.OverridePath
+                    + (status.DataSource === 'override' ? '' : ' (absente)');
+                $('McuFound').textContent = status.Found + ' / ' + status.Total
+                    + (status.Upcoming ? ' (+ ' + status.Upcoming + ' à venir, non comptés)' : '');
+                $('McuLastSync').textContent = formatDate(status.LastSyncUtc);
+
+                $('McuOverrideError').hidden = !status.OverrideError;
+                $('McuOverrideError').textContent = status.OverrideError
+                    ? 'Surcharge locale ignorée : ' + status.OverrideError : '';
+                $('McuSyncError').hidden = !status.LastSyncError;
+                $('McuSyncError').textContent = status.LastSyncError
+                    ? 'Échec de la dernière synchronisation : ' + status.LastSyncError : '';
+
+                var missing = status.Missing || [];
+                $('McuMissingEmpty').hidden = missing.length > 0;
+                $('McuMissingTable').hidden = missing.length === 0;
+                $('McuMissing').innerHTML = missing.map(function (m) {
+                    return '<tr><td>' + escapeHtml(m.Title) + '</td><td>' + escapeHtml(m.Type)
+                        + '</td><td>' + escapeHtml(m.TmdbId) + '</td><td>' + escapeHtml(m.ImdbId || '') + '</td></tr>';
+                }).join('');
+            }
+
+            function loadStatus() {
+                return ApiClient.getJSON(ApiClient.getUrl('McuTimeline/status')).then(showStatus);
+            }
+
+            function renderLibraries(folders, selected) {
+                var candidates = folders.filter(function (f) {
+                    return f.CollectionType === 'movies' || f.CollectionType === 'tvshows' || !f.CollectionType || f.CollectionType === 'mixed';
+                });
+                $('McuLibraries').innerHTML = candidates.map(function (f) {
+                    var checked = selected.indexOf(f.ItemId) >= 0 ? ' checked' : '';
+                    return '<div class="checkboxContainer"><label><input is="emby-checkbox" type="checkbox" class="mcuLibrary" value="'
+                        + escapeHtml(f.ItemId) + '"' + checked + '><span>' + escapeHtml(f.Name) + '</span></label></div>';
+                }).join('');
+            }
+
+            function applyAllLibraries() {
+                $('McuLibraries').hidden = $('McuAllLibraries').checked;
+            }
+
+            function renderOwners(users, ownerId) {
+                var admins = users.filter(function (u) { return u.Policy && u.Policy.IsAdministrator; });
+                $('McuOwner').innerHTML = '<option value="">Premier administrateur</option>' + admins.map(function (u) {
+                    return '<option value="' + escapeHtml(u.Id) + '">' + escapeHtml(u.Name) + '</option>';
+                }).join('');
+                $('McuOwner').value = ownerId || '';
+            }
+
+            function loadSettings() {
+                return Promise.all([
+                    ApiClient.getPluginConfiguration(pluginId),
+                    ApiClient.getVirtualFolders(),
+                    ApiClient.getUsers()
+                ]).then(function (results) {
+                    var config = results[0];
+                    var selected = config.LibraryIds || [];
+                    $('McuAllLibraries').checked = selected.length === 0;
+                    renderLibraries(results[1] || [], selected);
+                    applyAllLibraries();
+                    $('McuIncludeShorts').checked = config.IncludeShorts;
+                    $('McuIncludeUpcoming').checked = config.IncludeUpcoming;
+                    $('McuEnablePlaylists').checked = config.EnablePlaylists;
+                    renderOwners(results[2] || [], config.PlaylistOwnerId);
+                    $('McuReleaseName').value = config.ReleasePlaylistName;
+                    $('McuChronoName').value = config.ChronologicalPlaylistName;
+                });
+            }
+
+            page.addEventListener('viewshow', function () {
+                Dashboard.showLoadingMsg();
+                // relative to /web/, so it works behind any address and base URL
+                $('McuSnippet').textContent = '<iframe src="../McuTimeline/page" title="MCU"'
+                    + ' style="width:100%;height:calc(100vh - 5rem);border:0;display:block"></iframe>';
+                Promise.all([loadSettings(), loadStatus()]).catch(function (error) {
+                    Dashboard.alert('Chargement impossible : ' + describeError(error));
+                }).then(function () {
+                    Dashboard.hideLoadingMsg();
+                });
+            });
+
+            $('McuAllLibraries').addEventListener('change', applyAllLibraries);
+
+            $('McuSettingsForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                Dashboard.showLoadingMsg();
+                // read again just before saving, the sync writes its own fields meanwhile
+                ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                    config.LibraryIds = $('McuAllLibraries').checked ? [] : Array.prototype.map.call(
+                        page.querySelectorAll('.mcuLibrary:checked'), function (input) { return input.value; });
+                    config.IncludeShorts = $('McuIncludeShorts').checked;
+                    config.IncludeUpcoming = $('McuIncludeUpcoming').checked;
+                    config.EnablePlaylists = $('McuEnablePlaylists').checked;
+                    config.PlaylistOwnerId = $('McuOwner').value;
+                    config.ReleasePlaylistName = $('McuReleaseName').value.trim();
+                    config.ChronologicalPlaylistName = $('McuChronoName').value.trim();
+                    return ApiClient.updatePluginConfiguration(pluginId, config);
+                }).then(function (result) {
+                    Dashboard.processPluginConfigurationUpdateResult(result);
+                    return loadStatus();
+                }).catch(function (error) {
+                    Dashboard.hideLoadingMsg();
+                    Dashboard.alert('Enregistrement impossible : ' + describeError(error));
+                });
+                return false;
+            });
+
+            $('McuSyncButton').addEventListener('click', function () {
+                Dashboard.showLoadingMsg();
+                ApiClient.ajax({
+                    type: 'POST',
+                    url: ApiClient.getUrl('McuTimeline/sync'),
+                    dataType: 'json'
+                }).then(function (status) {
+                    showStatus(status);
+                    Dashboard.hideLoadingMsg();
+                    if (!status.LastSyncError) {
+                        Dashboard.alert('Playlists synchronisées.');
+                    }
+                }, function (error) {
+                    Dashboard.hideLoadingMsg();
+                    Dashboard.alert('Synchronisation impossible : ' + describeError(error));
+                });
+            });
+
+            $('McuOpenButton').addEventListener('click', function () {
+                window.open(ApiClient.serverAddress().replace(/\/$/, '') + '/McuTimeline/page', '_blank');
+            });
+        })();
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+name: Bug report
+description: Something does not work as described
+labels:
+  - bug
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: What you did, what you expected, what you got instead.
+    validations:
+      required: true
+  - type: input
+    id: plugin-version
+    attributes:
+      label: MCU Timeline version
+      placeholder: 1.0.0.0
+    validations:
+      required: true
+  - type: input
+    id: server-version
+    attributes:
+      label: Jellyfin version
+      placeholder: 12.1.0
+    validations:
+      required: true
+  - type: input
+    id: install
+    attributes:
+      label: How Jellyfin runs
+      description: Package, Docker image, operating system, and whether a reverse proxy is in front.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log lines
+      description: >
+        Every message the plugin writes starts with [MCU Timeline]. Remove anything you do
+        not want to share, addresses and account names included.
+      render: text

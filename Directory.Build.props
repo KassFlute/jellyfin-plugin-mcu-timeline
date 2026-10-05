@@ -1,0 +1,10 @@
+<Project>
+    <PropertyGroup>
+        <!-- placeholder, the real number comes from build.yaml, through the packaging script
+             locally and through JPRM in the release pipeline. Only Version is declared, so
+             AssemblyVersion and FileVersion derive from it. Declaring all three would pin the
+             assembly to 0.0.0.0 for any build that sets the version on the command line, which
+             is what scripts/package.sh does -->
+        <Version>0.0.0.0</Version>
+    </PropertyGroup>
+</Project>

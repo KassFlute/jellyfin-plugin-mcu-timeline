@@ -1,0 +1,11 @@
+[
+    {
+        "guid": "7de48f79-4cdb-453f-8ce9-bd22c9e84f6a",
+        "name": "MCU Timeline",
+        "description": "Adds a timeline of the Marvel Cinematic Universe, in release or story order, showing what you own, what you have seen and what is missing. Keeps two matching playlists for the clients that cannot show the timeline.\n",
+        "overview": "Marvel Cinematic Universe timeline and playlists.",
+        "owner": "cassien",
+        "category": "General",
+        "versions": []
+    }
+]

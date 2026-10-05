@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="same-origin">
+    <title>MCU</title>
+    <link rel="stylesheet" href="assets/timeline.css">
+</head>
+<body>
+    <header class="controls" id="controls" hidden>
+        <div class="controls-row">
+            <div class="segmented" role="radiogroup" id="order"></div>
+            <div class="segmented" role="radiogroup" id="type"></div>
+        </div>
+        <div class="controls-row">
+            <label class="switch">
+                <input type="checkbox" role="switch" id="hideMissing">
+                <span class="switch-track" aria-hidden="true"></span>
+                <span id="hideMissingLabel"></span>
+            </label>
+            <span class="counter" id="counter" aria-live="polite"></span>
+            <button type="button" class="button-accent" id="continue"></button>
+        </div>
+    </header>
+    <main>
+        <p class="message" id="message" role="status"></p>
+        <ol class="timeline" id="timeline" hidden></ol>
+    </main>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="assets/timeline.js"></script>
+</body>
+</html>

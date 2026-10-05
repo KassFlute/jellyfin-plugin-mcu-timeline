@@ -1,0 +1,17 @@
+# Build output
+bin/
+obj/
+artifacts/
+*.user
+
+# Rider / VS / VS Code
+.idea/
+.vs/
+.vscode/
+
+# NuGet
+*.nupkg
+packages/
+
+# Local working documents, not part of the published repository
+notes.md

@@ -1,0 +1,17 @@
+{
+  "version": "2026.10.1",
+  "items": [
+    {
+      "id": "captain-america-first-avenger",
+      "title": "Captain America : First Avenger",
+      "type": "movie",
+      "tmdbId": 1771,
+      "releaseDate": "2011-07-22",
+      "chronoOrder": 10,
+      "storyYear": "1943-1945",
+      "phase": 1,
+      "saga": "infinity",
+      "era": "origins"
+    }
+  ]
+}

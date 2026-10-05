@@ -1,0 +1,18 @@
+---
+name: "MCU Timeline"
+guid: "7de48f79-4cdb-453f-8ce9-bd22c9e84f6a"
+version: "1.0.0.0"
+targetAbi: "12.1.0.0"
+framework: "net10.0"
+owner: "cassien"
+overview: "Marvel Cinematic Universe timeline and playlists."
+description: >
+  Adds a timeline of the Marvel Cinematic Universe, in release or story order, showing what
+  you own, what you have seen and what is missing. Keeps two matching playlists for the
+  clients that cannot show the timeline.
+
+category: "General"
+artifacts:
+  - "Jellyfin.Plugin.McuTimeline.dll"
+changelog: |-
+  First public release.
