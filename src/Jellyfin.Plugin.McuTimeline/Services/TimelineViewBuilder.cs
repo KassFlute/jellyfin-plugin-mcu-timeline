@@ -64,7 +64,7 @@ public class TimelineViewBuilder
             return null;
         }
 
-        var data = _userDataManager.GetUserDataBatch(owned.Playable, user);
+        var data = UserDataOf(owned.Playable, user);
         UserItemData? StateOf(BaseItem item) => data.GetValueOrDefault(item.Id);
 
         // carry on with what was started, else the first unseen, else from the top
@@ -116,9 +116,24 @@ public class TimelineViewBuilder
         return playable.Count == 0 ? null : (item, playable);
     }
 
+    // 10.11 has no batch lookup
+    private Dictionary<Guid, UserItemData> UserDataOf(IReadOnlyList<BaseItem> items, User user)
+    {
+        var result = new Dictionary<Guid, UserItemData>();
+        foreach (var item in items)
+        {
+            if (_userDataManager.GetUserData(user, item) is { } data)
+            {
+                result[item.Id] = data;
+            }
+        }
+
+        return result;
+    }
+
     private TimelineItemDto ToOwnedDto(TimelineEntry entry, BaseItem item, IReadOnlyList<BaseItem> playable, User user)
     {
-        var data = _userDataManager.GetUserDataBatch(playable, user);
+        var data = UserDataOf(playable, user);
         var played = playable.Count(i => data.GetValueOrDefault(i.Id) is { Played: true });
         var started = playable.Any(i => data.GetValueOrDefault(i.Id) is { Played: false, PlaybackPositionTicks: > 0 });
 

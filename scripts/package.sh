@@ -31,7 +31,7 @@ cat > "$STAGE/meta.json" <<META
     "overview": "Marvel Cinematic Universe timeline and playlists.",
     "owner": "cassien",
     "targetAbi": "$TARGET_ABI",
-    "framework": "net10.0",
+    "framework": "net9.0",
     "version": "$VERSION",
     "changelog": "",
     "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"

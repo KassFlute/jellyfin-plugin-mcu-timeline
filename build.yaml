@@ -2,8 +2,8 @@
 name: "MCU Timeline"
 guid: "7de48f79-4cdb-453f-8ce9-bd22c9e84f6a"
 version: "1.0.0.0"
-targetAbi: "12.1.0.0"
-framework: "net10.0"
+targetAbi: "10.11.0.0"
+framework: "net9.0"
 owner: "cassien"
 overview: "Marvel Cinematic Universe timeline and playlists."
 description: >
