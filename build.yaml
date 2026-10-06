@@ -1,7 +1,7 @@
 ---
 name: "MCU Timeline"
 guid: "7de48f79-4cdb-453f-8ce9-bd22c9e84f6a"
-version: "1.0.0.0"
+version: "1.0.1.0"
 targetAbi: "10.11.0.0"
 framework: "net9.0"
 owner: "cassien"
@@ -16,4 +16,5 @@ imageUrl: "https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timel
 artifacts:
   - "Jellyfin.Plugin.McuTimeline.dll"
 changelog: |-
-  First release.
+  The title card keeps the same size whatever the title, so the timeline no longer jumps.
+  Watched titles in a row are joined by a green line on the timeline.

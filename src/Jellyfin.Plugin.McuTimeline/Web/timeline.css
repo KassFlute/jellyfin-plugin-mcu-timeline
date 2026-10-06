@@ -140,7 +140,8 @@ button {
     overflow: hidden;
     border-radius: var(--radius-card);
     background: var(--bg);
-    min-height: 17rem;
+    /* fixed, so a long title or an extra badge never pushes the rail down */
+    height: 20rem;
     transition: transform var(--dur-base) var(--ease-out);
 }
 
@@ -205,6 +206,7 @@ button {
     display: flex;
     gap: var(--space-8);
     align-items: center;
+    height: 100%;
     padding: var(--space-6) var(--space-8);
     color: #f4f5f7;
 }
@@ -212,7 +214,7 @@ button {
 .hero-poster {
     position: relative;
     flex: none;
-    width: 10rem;
+    width: 11rem;
     aspect-ratio: 2 / 3;
     border-radius: 10px;
     overflow: hidden;
@@ -240,9 +242,16 @@ button {
 .hero-body {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-2);
     min-width: 0;
     max-width: 44rem;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+/* a clamped block in a column would rather shrink than clamp */
+.hero-body > * {
+    flex: none;
 }
 
 .hero-eyebrow {
@@ -257,16 +266,22 @@ button {
 .hero-title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(1.6rem, 3vw, 2.6rem);
+    font-size: clamp(1.6rem, 3vw, 2.3rem);
     font-weight: 700;
     letter-spacing: -.02em;
     line-height: 1.1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .hero-meta {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--space-2) var(--space-4);
+    overflow: hidden;
+    white-space: nowrap;
     margin: 0;
     color: #c4c8d0;
     font-variant-numeric: tabular-nums;
@@ -304,11 +319,15 @@ button {
     color: #c4c8d0;
     font-size: .9rem;
     font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .hero-actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    flex: none;
     gap: var(--space-3);
     margin-top: var(--space-2);
 }
@@ -796,6 +815,34 @@ button {
     width: 50%;
 }
 
+/* watched titles in a row are joined in green, over the grey axis and under the dots */
+.axis .link {
+    position: absolute;
+    top: calc(50% - 1.5px);
+    height: 3px;
+    display: none;
+    background: var(--state-played);
+}
+
+.done-in .axis .link,
+.done-out .axis .link {
+    display: block;
+}
+
+.done-in .axis .link {
+    left: 0;
+    right: 50%;
+}
+
+.done-out .axis .link {
+    left: 50%;
+    right: calc(var(--space-4) * -1);
+}
+
+.done-in.done-out .axis .link {
+    left: 0;
+}
+
 .dot {
     position: absolute;
     top: calc(50% - 5px);
@@ -1132,7 +1179,7 @@ button {
         position: sticky;
         top: var(--header, 0);
         z-index: 5;
-        min-height: 0;
+        height: 11rem;
         border-radius: 0 0 var(--radius-card) var(--radius-card);
     }
 
@@ -1152,6 +1199,7 @@ button {
 
     .hero-title {
         font-size: 1.15rem;
+        -webkit-line-clamp: 1;
     }
 
     .hero-meta,
@@ -1269,6 +1317,30 @@ button {
     .rail > li:last-child .axis::before {
         width: 2px;
         height: 50%;
+    }
+
+    .done-in .axis .link,
+    .done-out .axis .link {
+        top: 0;
+        bottom: 0;
+        left: calc(50% - 1.5px);
+        right: auto;
+        width: 3px;
+        height: auto;
+    }
+
+    .done-in .axis .link {
+        bottom: 50%;
+    }
+
+    .done-out .axis .link {
+        top: 50%;
+    }
+
+    .done-in.done-out .axis .link {
+        top: 0;
+        bottom: 0;
+        left: calc(50% - 1.5px);
     }
 
     .card-hit:hover .poster,

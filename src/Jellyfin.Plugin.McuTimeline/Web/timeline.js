@@ -297,7 +297,7 @@
             li.innerHTML = '<span class="marker-box"><span class="marker-kicker">' + escapeHtml(kicker) + '</span>'
                 + '<span class="marker-title">' + escapeHtml(title) + '</span>'
                 + (sub ? '<span class="marker-sub">' + escapeHtml(sub) + '</span>' : '') + '</span>'
-                + '<span class="axis"><span class="tick"></span></span>';
+                + '<span class="axis"><span class="link"></span><span class="tick"></span></span>';
             return li;
         }
 
@@ -334,7 +334,7 @@
                 + (item.inProgress ? '<span class="progress"><span style="transform:scaleX(' + item.progress.toFixed(3) + ')"></span></span>' : '')
                 + (item.status === 'upcoming' ? '<span class="date-tag">' + escapeHtml(longDate(item.releaseDate)) + '</span>' : '')
                 + '</span></span></button>'
-                + '<span class="axis" aria-hidden="true"><span class="dot"></span></span>'
+                + '<span class="axis" aria-hidden="true"><span class="link"></span><span class="dot"></span></span>'
                 + '<span class="card-text" aria-hidden="true"><span class="card-title">' + escapeHtml(item.title) + '</span>'
                 + '<span class="card-sub"><span>' + item.releaseDate.slice(0, 4) + '</span></span></span>';
         }
@@ -357,6 +357,7 @@
             li.classList.toggle('selected', wasSelected);
             li.querySelector('.card-hit').tabIndex = wasSelected ? 0 : -1;
             markNext();
+            updateLinks();
         }
 
         function onImageEvent(event) {
@@ -464,6 +465,28 @@
             });
         }
 
+        // greens the axis between two watched titles that follow each other, markers in
+        // between included
+        function updateLinks() {
+            var items = Array.prototype.slice.call($('.rail').children);
+            var played = function (li) { return li.classList.contains('state-played'); };
+            items.forEach(function (li) { li.classList.remove('done-in', 'done-out'); });
+            var last = null;
+            items.forEach(function (li, index) {
+                if (!li.classList.contains('card')) {
+                    return;
+                }
+                if (last !== null && played(items[last]) && played(li)) {
+                    items[last].classList.add('done-out');
+                    for (var k = last + 1; k < index; k++) {
+                        items[k].classList.add('done-in', 'done-out');
+                    }
+                    li.classList.add('done-in');
+                }
+                last = index;
+            });
+        }
+
         function positions() {
             var out = {};
             visible.forEach(function (item) {
@@ -497,6 +520,7 @@
 
             $('.message').textContent = visible.length ? '' : S.empty;
             markNext();
+            updateLinks();
             renderMinimapTrack();
             updateCounter();
 
@@ -720,6 +744,7 @@
             byId[item.id] = item;
             visible = visible.map(function (v) { return v.id === item.id ? item : v; });
             refreshCard(item);
+            updateLinks();
             renderMinimapTrack();
             updateCounter();
             if (selectedId === item.id) {
