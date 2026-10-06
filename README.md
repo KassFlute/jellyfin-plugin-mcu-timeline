@@ -13,9 +13,11 @@ The timeline page needs [Plugin Pages](https://github.com/IAmParadox27/jellyfin-
 and [File Transformation](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation).
 
 1. In Dashboard, Plugins, Repositories, add
-   `https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timeline/main/manifest.json`
-2. Install **MCU Timeline** from the catalogue and restart Jellyfin.
-3. In the plugin settings, tick "Show the timeline under Media in the side menu".
+   ```
+   https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timeline/main/manifest.json
+   ```
+3. Install **MCU Timeline** from the catalogue and restart Jellyfin.
+4. In the plugin settings, tick "Show the timeline under Media in the side menu".
 
 ## Settings
 
