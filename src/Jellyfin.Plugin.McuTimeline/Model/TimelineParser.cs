@@ -134,18 +134,19 @@ public static class TimelineParser
         return new TimelineEntry
         {
             Id = id,
-            Title = RequiredString(item, "title", where),
+            Title = OptionalText(item, "title", where) ?? throw new TimelineDataException($"{where}: \"title\" is required."),
             Type = type,
             TmdbId = tmdbId,
             ImdbId = OptionalString(item, "imdbId", where),
             Seasons = seasons,
             ReleaseDate = releaseDate,
             ChronoOrder = RequiredInt(item, "chronoOrder", where),
-            StoryYear = OptionalString(item, "storyYear", where),
+            StoryYear = OptionalText(item, "storyYear", where),
             Phase = phase,
             Saga = saga,
             Era = era,
-            Note = OptionalString(item, "note", where)
+            AccentColor = OptionalColor(item, where),
+            Note = OptionalText(item, "note", where)
         };
     }
 
@@ -169,6 +170,39 @@ public static class TimelineParser
 
         var text = value.GetString()!.Trim();
         return text.Length == 0 ? null : text;
+    }
+
+    // a plain string, or { "fr": "...", "en": "..." }
+    private static LocalizedText? OptionalText(JsonElement parent, string name, string where)
+    {
+        if (!parent.TryGetProperty(name, out var value) || value.ValueKind != JsonValueKind.Object)
+        {
+            return OptionalString(parent, name, where) is { } plain ? LocalizedText.FromString(plain) : null;
+        }
+
+        var texts = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var language in value.EnumerateObject())
+        {
+            if (language.Value.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(language.Value.GetString()))
+            {
+                throw new TimelineDataException($"{where}: \"{name}.{language.Name}\" must be a non empty string.");
+            }
+
+            texts[language.Name] = language.Value.GetString()!.Trim();
+        }
+
+        return texts.Count == 0 ? null : new LocalizedText(texts);
+    }
+
+    private static string? OptionalColor(JsonElement parent, string where)
+    {
+        var color = OptionalString(parent, "accentColor", where);
+        if (color is not null && !(color.Length == 7 && color[0] == '#' && color.Skip(1).All(char.IsAsciiHexDigit)))
+        {
+            throw new TimelineDataException($"{where}: accentColor \"{color}\" is not a #RRGGBB colour.");
+        }
+
+        return color;
     }
 
     private static int RequiredInt(JsonElement parent, string name, string where)

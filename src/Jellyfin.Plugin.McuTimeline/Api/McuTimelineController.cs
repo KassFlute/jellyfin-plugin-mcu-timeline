@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Jellyfin.Plugin.McuTimeline.Api;
 
 /// <summary>
-/// Serves the timeline page and its data.
+/// Serves the timeline assets and data.
 /// </summary>
 [ApiController]
 [Route("McuTimeline")]
@@ -23,9 +23,11 @@ public class McuTimelineController : ControllerBase
     private static readonly Dictionary<string, string> _assets = new(StringComparer.Ordinal)
     {
         ["timeline.css"] = "text/css; charset=utf-8",
-        ["timeline.js"] = "text/javascript; charset=utf-8",
-        ["strings-fr.json"] = "application/json; charset=utf-8"
+        ["strings-fr.json"] = "application/json; charset=utf-8",
+        ["strings-en.json"] = "application/json; charset=utf-8"
     };
+
+    private static readonly string _assetVersion = typeof(McuTimelineController).Assembly.GetName().Version?.ToString() ?? "0";
 
     private readonly TimelineViewBuilder _viewBuilder;
     private readonly LibraryMatcher _matcher;
@@ -34,6 +36,8 @@ public class McuTimelineController : ControllerBase
     private readonly IAuthorizationContext _authorizationContext;
     private readonly ISessionManager _sessionManager;
     private readonly IServerApplicationHost _applicationHost;
+    private readonly PosterService _posterService;
+    private readonly JellyseerrClient _jellyseerr;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="McuTimelineController"/> class.
@@ -45,6 +49,8 @@ public class McuTimelineController : ControllerBase
     /// <param name="authorizationContext">Authorization context of the caller.</param>
     /// <param name="sessionManager">Session manager.</param>
     /// <param name="applicationHost">Server host.</param>
+    /// <param name="posterService">Posters of missing titles.</param>
+    /// <param name="jellyseerr">Jellyseerr client.</param>
     public McuTimelineController(
         TimelineViewBuilder viewBuilder,
         LibraryMatcher matcher,
@@ -52,7 +58,9 @@ public class McuTimelineController : ControllerBase
         PlaylistSyncService syncService,
         IAuthorizationContext authorizationContext,
         ISessionManager sessionManager,
-        IServerApplicationHost applicationHost)
+        IServerApplicationHost applicationHost,
+        PosterService posterService,
+        JellyseerrClient jellyseerr)
     {
         _viewBuilder = viewBuilder;
         _matcher = matcher;
@@ -61,30 +69,58 @@ public class McuTimelineController : ControllerBase
         _authorizationContext = authorizationContext;
         _sessionManager = sessionManager;
         _applicationHost = applicationHost;
+        _posterService = posterService;
+        _jellyseerr = jellyseerr;
     }
 
     /// <summary>
-    /// Serves the timeline page. The page holds no data: a plain navigation carries no
-    /// Jellyfin credentials, so the page reads the web client session and every data call
-    /// below requires it, like the web client itself.
+    /// Serves the page Plugin Pages loads into the web client. It only loads the script,
+    /// which draws the timeline in place.
     /// </summary>
     /// <response code="200">Page returned.</response>
-    /// <returns>The HTML page.</returns>
+    /// <returns>An HTML fragment.</returns>
     [HttpGet("page")]
-    [AllowAnonymous]
+    [Authorize]
     [Produces(MediaTypeNames.Text.Html)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult GetPage() => Embedded("timeline.html", "text/html; charset=utf-8");
+    public ContentResult GetPage()
+    {
+        Response.Headers.CacheControl = "no-cache";
+        var script = $"{Request.PathBase}/McuTimeline/assets/timeline.js?v={_assetVersion}";
+        return Content(
+            $"<div class=\"mcuTimelineHost\"></div><script src=\"{script}\"></script>",
+            "text/html; charset=utf-8");
+    }
 
     /// <summary>
-    /// Serves the page stylesheet, script and strings.
+    /// Serves the timeline script. Open to all, a script tag carries no token.
+    /// </summary>
+    /// <response code="200">Script returned.</response>
+    /// <returns>The script.</returns>
+    [HttpGet("assets/timeline.js")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public ActionResult GetScript() => Embedded("timeline.js", "text/javascript; charset=utf-8");
+
+    /// <summary>
+    /// Serves the script that adds the entry under Media, loaded with the web client.
+    /// </summary>
+    /// <response code="200">Script returned.</response>
+    /// <returns>The script.</returns>
+    [HttpGet("assets/menu.js")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public ActionResult GetMenuScript() => Embedded("menu.js", "text/javascript; charset=utf-8");
+
+    /// <summary>
+    /// Serves the stylesheet and the strings, fetched by the script with the user's token.
     /// </summary>
     /// <param name="file">File name.</param>
     /// <response code="200">File returned.</response>
     /// <response code="404">Unknown file.</response>
     /// <returns>The file.</returns>
     [HttpGet("assets/{file}")]
-    [AllowAnonymous]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult GetAsset([FromRoute] string file)
@@ -96,13 +132,14 @@ public class McuTimelineController : ControllerBase
     /// Returns the timeline merged with the library and the calling user's play state.
     /// </summary>
     /// <response code="200">Timeline returned.</response>
+    /// <param name="language">Web client language, such as fr or en-US.</param>
     /// <returns>Every entry, unsorted.</returns>
     [HttpGet("items")]
     [Authorize]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<TimelineResponse>> GetItems()
+    public async Task<ActionResult<TimelineResponse>> GetItems([FromQuery] string? language)
     {
         var auth = await _authorizationContext.GetAuthorizationInfo(Request).ConfigureAwait(false);
         if (auth.User is null)
@@ -110,14 +147,140 @@ public class McuTimelineController : ControllerBase
             return Unauthorized();
         }
 
-        var (version, items) = _viewBuilder.Build(auth.User);
+        var (version, items) = _viewBuilder.Build(auth.User, language);
         return new TimelineResponse
         {
             Version = version,
             ServerId = _applicationHost.SystemId,
             UserId = auth.User.Id.ToString("N", System.Globalization.CultureInfo.InvariantCulture),
+            CanRequest = JellyseerrClient.IsConfigured,
             Items = items
         };
+    }
+
+    /// <summary>
+    /// Tells the menu script whether to add the entry under Media.
+    /// </summary>
+    /// <response code="200">Setting returned.</response>
+    /// <returns>Whether the entry is shown.</returns>
+    [HttpGet("menu")]
+    [Authorize]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public ActionResult<MenuDto> GetMenu() => new MenuDto(PluginSettings.Current.ShowInPluginPages);
+
+    /// <summary>
+    /// Marks an entry as seen by the calling user.
+    /// </summary>
+    /// <param name="entryId">Entry id.</param>
+    /// <param name="language">Web client language.</param>
+    /// <response code="200">Done, the entry is returned as it now stands.</response>
+    /// <response code="404">The user does not have this entry.</response>
+    /// <returns>The entry.</returns>
+    [HttpPost("played/{entryId}")]
+    [Authorize]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<ActionResult<TimelineItemDto>> MarkPlayed([FromRoute] string entryId, [FromQuery] string? language) => SetPlayed(entryId, true, language);
+
+    /// <summary>
+    /// Marks an entry as not seen by the calling user.
+    /// </summary>
+    /// <param name="entryId">Entry id.</param>
+    /// <param name="language">Web client language.</param>
+    /// <response code="200">Done, the entry is returned as it now stands.</response>
+    /// <response code="404">The user does not have this entry.</response>
+    /// <returns>The entry.</returns>
+    [HttpDelete("played/{entryId}")]
+    [Authorize]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<ActionResult<TimelineItemDto>> MarkUnplayed([FromRoute] string entryId, [FromQuery] string? language) => SetPlayed(entryId, false, language);
+
+    /// <summary>
+    /// Returns TMDB posters for the titles the calling user does not have. Slow on the first
+    /// call, the page asks for them after drawing the timeline.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="200">Posters returned.</response>
+    /// <returns>Poster address by entry id.</returns>
+    [HttpGet("posters")]
+    [Authorize]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyDictionary<string, string>>> GetPosters(CancellationToken cancellationToken)
+    {
+        var missing = await MissingEntriesAsync().ConfigureAwait(false);
+        if (missing is null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(await _posterService.GetPostersAsync(missing, cancellationToken).ConfigureAwait(false));
+    }
+
+    /// <summary>
+    /// Returns where the titles the calling user does not have stand in Jellyseerr.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="200">Statuses returned, empty without Jellyseerr.</response>
+    /// <returns>pending, processing or available by entry id.</returns>
+    [HttpGet("requests")]
+    [Authorize]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyDictionary<string, string>>> GetRequests(CancellationToken cancellationToken)
+    {
+        var missing = await MissingEntriesAsync().ConfigureAwait(false);
+        if (missing is null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(JellyseerrClient.IsConfigured
+            ? await _jellyseerr.GetStatusesAsync(missing, cancellationToken).ConfigureAwait(false)
+            : new Dictionary<string, string>());
+    }
+
+    /// <summary>
+    /// Requests a title from Jellyseerr as the calling user.
+    /// </summary>
+    /// <param name="entryId">Entry id.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="200">Request made, new status returned.</response>
+    /// <response code="404">Unknown entry, or Jellyseerr not set up.</response>
+    /// <response code="502">Jellyseerr refused or is unreachable, the error code says which.</response>
+    /// <returns>The status.</returns>
+    [HttpPost("request/{entryId}")]
+    [Authorize]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status502BadGateway)]
+    public async Task<ActionResult<RequestResultDto>> RequestTitle([FromRoute] string entryId, CancellationToken cancellationToken)
+    {
+        var auth = await _authorizationContext.GetAuthorizationInfo(Request).ConfigureAwait(false);
+        if (auth.User is null)
+        {
+            return Unauthorized();
+        }
+
+        var entry = _dataProvider.Get().Data.Items.FirstOrDefault(e => string.Equals(e.Id, entryId, StringComparison.Ordinal));
+        if (entry is null || !JellyseerrClient.IsConfigured)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            return new RequestResultDto(await _jellyseerr.RequestAsync(entry, auth.User.Id, cancellationToken).ConfigureAwait(false), null, null);
+        }
+        catch (JellyseerrException ex)
+        {
+            return StatusCode(StatusCodes.Status502BadGateway, new RequestResultDto(null, ex.Code, ex.SeerrMessage));
+        }
     }
 
     /// <summary>
@@ -127,7 +290,7 @@ public class McuTimelineController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">Playback sent to the web client.</response>
     /// <response code="404">The entry is not playable for this user.</response>
-    /// <response code="409">No web client session to play in, the page opens the item instead.</response>
+    /// <response code="409">No web client session to play in, the timeline opens the item instead.</response>
     /// <returns>No content.</returns>
     [HttpPost("play/{entryId}")]
     [Authorize]
@@ -147,8 +310,8 @@ public class McuTimelineController : ControllerBase
             return NotFound();
         }
 
-        // the page shares the web client token, so the token's device is the web client
-        // the user is looking at
+        // the timeline runs in the web client with its token, so the token's device is the
+        // web client the user is looking at
         var session = _sessionManager.Sessions
             .Where(s => s.UserId.Equals(auth.User.Id)
                 && string.Equals(s.DeviceId, auth.DeviceId, StringComparison.Ordinal)
@@ -178,12 +341,13 @@ public class McuTimelineController : ControllerBase
     /// Returns the matching state for the configuration page.
     /// </summary>
     /// <response code="200">State returned.</response>
+    /// <param name="language">Dashboard language, for the titles.</param>
     /// <returns>Data version, found and missing titles, last synchronisation.</returns>
     [HttpGet("status")]
     [Authorize(Policy = Policies.RequiresElevation)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<StatusResponse> GetStatus()
+    public ActionResult<StatusResponse> GetStatus([FromQuery] string? language)
     {
         var source = _dataProvider.Get();
         var snapshot = _matcher.GetSnapshot();
@@ -203,7 +367,7 @@ public class McuTimelineController : ControllerBase
             Upcoming = visible.Count - released.Count,
             Missing = released
                 .Where(e => !snapshot.Matches.ContainsKey(e.Id))
-                .Select(e => new MissingTitleDto(e.Id, e.Title, TimelineViewBuilder.TypeName(e.Type), e.TmdbId, e.ImdbId))
+                .Select(e => new MissingTitleDto(e.Id, e.Title.For(language), TimelineViewBuilder.TypeName(e.Type), e.TmdbId, e.ImdbId))
                 .ToList(),
             LastSyncUtc = settings.LastSyncUtc,
             LastSyncError = string.IsNullOrEmpty(settings.LastSyncError) ? null : settings.LastSyncError
@@ -213,6 +377,7 @@ public class McuTimelineController : ControllerBase
     /// <summary>
     /// Synchronises the playlists now.
     /// </summary>
+    /// <param name="language">Dashboard language, for the titles.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Synchronisation done, state returned.</response>
     /// <returns>The state after the synchronisation.</returns>
@@ -220,12 +385,38 @@ public class McuTimelineController : ControllerBase
     [Authorize(Policy = Policies.RequiresElevation)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<StatusResponse>> Sync(CancellationToken cancellationToken)
+    public async Task<ActionResult<StatusResponse>> Sync([FromQuery] string? language, CancellationToken cancellationToken)
     {
         // a manual sync means the admin just fixed something, start from a fresh match
         _matcher.Invalidate();
         await _syncService.SyncAsync(cancellationToken).ConfigureAwait(false);
-        return GetStatus();
+        return GetStatus(language);
+    }
+
+    private async Task<ActionResult<TimelineItemDto>> SetPlayed(string entryId, bool played, string? language)
+    {
+        var auth = await _authorizationContext.GetAuthorizationInfo(Request).ConfigureAwait(false);
+        if (auth.User is null)
+        {
+            return Unauthorized();
+        }
+
+        return _viewBuilder.SetPlayed(entryId, auth.User, played, language) is { } item ? item : NotFound();
+    }
+
+    private async Task<List<Model.TimelineEntry>?> MissingEntriesAsync()
+    {
+        var auth = await _authorizationContext.GetAuthorizationInfo(Request).ConfigureAwait(false);
+        if (auth.User is null)
+        {
+            return null;
+        }
+
+        var missing = _viewBuilder.Build(auth.User).Items
+            .Where(i => i.Status != "owned")
+            .Select(i => i.Id)
+            .ToHashSet(StringComparer.Ordinal);
+        return _dataProvider.Get().Data.Items.Where(e => missing.Contains(e.Id)).ToList();
     }
 
     private FileStreamResult Embedded(string name, string contentType)

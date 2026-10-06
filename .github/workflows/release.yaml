@@ -1,0 +1,55 @@
+name: Release
+
+# publish a GitHub release tagged with the version (1.0.1.0 or v1.0.1.0): the zip is attached
+# to it and manifest.json on main gets the new version, which is what Jellyfin servers read
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Version from the tag
+        id: version
+        run: |
+          tag='${{ github.event.release.tag_name }}'
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        uses: oddstr13/jellyfin-plugin-repository-manager@v1.1.1
+        id: jprm
+        with:
+          dotnet-target: net9.0
+          version: ${{ steps.version.outputs.version }}
+
+      - name: Attach the zip to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload '${{ github.event.release.tag_name }}' '${{ steps.jprm.outputs.artifact }}' --clobber
+
+      - name: Add the version to manifest.json
+        run: |
+          pip install --quiet jprm
+          artifact='${{ steps.jprm.outputs.artifact }}'
+          # the build stamps the version into Directory.Build.props, only the manifest is committed
+          git checkout -- .
+          jprm repo add \
+            --plugin-url="https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/$(basename "$artifact")" \
+            ./manifest.json "$artifact"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add manifest.json
+          git commit -m "Publish MCU Timeline ${{ steps.version.outputs.version }}"
+          git push origin main

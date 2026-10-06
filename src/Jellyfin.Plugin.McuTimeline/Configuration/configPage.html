@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
     <title>MCU Timeline</title>
 </head>
@@ -18,7 +18,6 @@
         .mcuActions { display: flex; flex-wrap: wrap; gap: .6em; margin-top: 1.2em; }
         .mcuActions .emby-button { margin: 0; }
         .mcuLibraries { margin-left: 2em; }
-        .mcuSnippet { display: block; padding: .8em; border-radius: .3em; background: rgba(0, 0, 0, .35); white-space: pre-wrap; word-break: break-all; }
     </style>
 
     <div data-role="content">
@@ -26,47 +25,47 @@
 
             <div class="verticalSection">
                 <div class="sectionTitleContainer flex align-items-center">
-                    <h2 class="sectionTitle">État</h2>
+                    <h2 class="sectionTitle" data-i18n="status"></h2>
                 </div>
                 <dl class="mcuFacts">
-                    <dt>Données</dt><dd id="McuDataVersion">…</dd>
-                    <dt>Surcharge locale</dt><dd id="McuOverridePath">…</dd>
-                    <dt>Titres trouvés</dt><dd id="McuFound">…</dd>
-                    <dt>Dernière synchronisation</dt><dd id="McuLastSync">…</dd>
+                    <dt data-i18n="data"></dt><dd id="McuDataVersion">…</dd>
+                    <dt data-i18n="override"></dt><dd id="McuOverridePath">…</dd>
+                    <dt data-i18n="found"></dt><dd id="McuFound">…</dd>
+                    <dt data-i18n="lastSync"></dt><dd id="McuLastSync">…</dd>
                 </dl>
                 <p id="McuOverrideError" class="mcuError" hidden></p>
                 <p id="McuSyncError" class="mcuError" hidden></p>
                 <div class="mcuActions">
                     <button is="emby-button" type="button" id="McuSyncButton" class="raised button-submit emby-button">
-                        <span>Synchroniser les playlists maintenant</span>
+                        <span data-i18n="syncNow"></span>
                     </button>
                     <button is="emby-button" type="button" id="McuOpenButton" class="raised emby-button">
-                        <span>Ouvrir la timeline</span>
+                        <span data-i18n="open"></span>
                     </button>
                 </div>
             </div>
 
             <div class="verticalSection">
                 <div class="sectionTitleContainer flex align-items-center">
-                    <h2 class="sectionTitle">Titres non trouvés</h2>
+                    <h2 class="sectionTitle" data-i18n="missingTitle"></h2>
                 </div>
-                <p id="McuMissingEmpty" hidden>Tous les titres sortis sont dans la bibliothèque.</p>
+                <p id="McuMissingEmpty" data-i18n="missingNone" hidden></p>
                 <table class="mcuTable" id="McuMissingTable" hidden>
-                    <thead><tr><th>Titre</th><th>Type</th><th>tmdbId</th><th>imdbId</th></tr></thead>
+                    <thead><tr><th data-i18n="colTitle"></th><th data-i18n="colType"></th><th>tmdbId</th><th>imdbId</th></tr></thead>
                     <tbody id="McuMissing"></tbody>
                 </table>
-                <div class="fieldDescription">Le rapprochement se fait par tmdbId, puis imdbId. Corrigez les identifiants dans les métadonnées de l'élément, puis synchronisez.</div>
+                <div class="fieldDescription" data-i18n="missingHelp"></div>
             </div>
 
             <form id="McuSettingsForm" class="verticalSection">
                 <div class="sectionTitleContainer flex align-items-center">
-                    <h2 class="sectionTitle">Réglages</h2>
+                    <h2 class="sectionTitle" data-i18n="settings"></h2>
                 </div>
 
                 <div class="checkboxContainer">
                     <label>
                         <input is="emby-checkbox" type="checkbox" id="McuAllLibraries">
-                        <span>Toutes les bibliothèques Films et Séries</span>
+                        <span data-i18n="allLibraries"></span>
                     </label>
                 </div>
                 <div id="McuLibraries" class="mcuLibraries"></div>
@@ -74,44 +73,54 @@
                 <div class="checkboxContainer">
                     <label>
                         <input is="emby-checkbox" type="checkbox" id="McuIncludeShorts">
-                        <span>Inclure les courts-métrages</span>
+                        <span data-i18n="includeShorts"></span>
                     </label>
                 </div>
                 <div class="checkboxContainer">
                     <label>
                         <input is="emby-checkbox" type="checkbox" id="McuIncludeUpcoming">
-                        <span>Inclure les titres à venir</span>
+                        <span data-i18n="includeUpcoming"></span>
                     </label>
                 </div>
                 <div class="checkboxContainer">
                     <label>
                         <input is="emby-checkbox" type="checkbox" id="McuEnablePlaylists">
-                        <span>Activer les playlists</span>
+                        <span data-i18n="enablePlaylists"></span>
                     </label>
                 </div>
 
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="McuShowInPluginPages">
+                        <span data-i18n="showInMenu"></span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription" data-i18n="showInMenuHelp"></div>
+                </div>
+
+                <div class="inputContainer">
+                    <input is="emby-input" type="url" id="McuJellyseerrUrl" data-i18n-label="seerrUrl" placeholder="https://jellyseerr.example.com">
+                    <div class="fieldDescription" data-i18n="seerrUrlHelp"></div>
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="password" id="McuJellyseerrApiKey" data-i18n-label="seerrKey" autocomplete="off">
+                    <div class="fieldDescription" data-i18n="seerrKeyHelp"></div>
+                </div>
+
                 <div class="selectContainer">
-                    <select is="emby-select" id="McuOwner" label="Propriétaire des playlists"></select>
+                    <select is="emby-select" id="McuOwner" data-i18n-label="owner"></select>
                 </div>
                 <div class="inputContainer">
-                    <input is="emby-input" type="text" id="McuReleaseName" label="Nom de la playlist en ordre de sortie" required>
+                    <input is="emby-input" type="text" id="McuReleaseName" data-i18n-label="releaseName">
                 </div>
                 <div class="inputContainer">
-                    <input is="emby-input" type="text" id="McuChronoName" label="Nom de la playlist en ordre chronologique" required>
+                    <input is="emby-input" type="text" id="McuChronoName" data-i18n-label="chronoName">
+                    <div class="fieldDescription" data-i18n="namesHelp"></div>
                 </div>
 
                 <button is="emby-button" type="submit" class="raised button-submit block emby-button">
-                    <span>Enregistrer</span>
+                    <span data-i18n="save"></span>
                 </button>
             </form>
-
-            <div class="verticalSection">
-                <div class="sectionTitleContainer flex align-items-center">
-                    <h2 class="sectionTitle">Onglet Custom Tabs</h2>
-                </div>
-                <p>Dans les réglages de Custom Tabs, créez un onglet « MCU » avec ce contenu HTML :</p>
-                <code class="mcuSnippet" id="McuSnippet"></code>
-            </div>
 
         </div>
     </div>
@@ -122,6 +131,80 @@
             var page = document.querySelector('#McuTimelineConfigPage');
             var $ = function (id) { return page.querySelector('#' + id); };
 
+            var STRINGS = {
+                en: {
+                    status: 'Status', data: 'Data', override: 'Local override', found: 'Titles found', lastSync: 'Last synchronisation',
+                    syncNow: 'Synchronise the playlists now', open: 'Open the timeline',
+                    missingTitle: 'Titles not found', missingNone: 'Every released title is in the library.',
+                    colTitle: 'Title', colType: 'Type',
+                    missingHelp: 'Titles are matched by tmdbId, then imdbId. Fix the ids in the item metadata, then synchronise.',
+                    settings: 'Settings', allLibraries: 'All movie and show libraries', includeShorts: 'Include shorts',
+                    includeUpcoming: 'Include upcoming titles', enablePlaylists: 'Keep the playlists',
+                    showInMenu: 'Show the timeline under Media in the side menu',
+                    showInMenuHelp: 'Needs the Plugin Pages and File Transformation plugins. Applies the next time the web client loads.',
+                    seerrUrl: 'Jellyseerr address', seerrUrlHelp: 'Leave empty to hide the request button.',
+                    seerrKey: 'Jellyseerr API key',
+                    seerrKeyHelp: 'Jellyseerr settings, General. Requests are made as the Jellyseerr user linked to the Jellyfin account, with its rights and quota.',
+                    owner: 'Playlist owner', firstAdmin: 'First administrator',
+                    releaseName: 'Release order playlist name', chronoName: 'Story order playlist name',
+                    namesHelp: 'Leave empty for a name in the server language.',
+                    save: 'Save', never: 'never', embedded: 'embedded', overrideActive: 'local override', overrideMissing: 'none',
+                    upcoming: '{n} upcoming, not counted', overrideError: 'Local override ignored: {e}',
+                    syncError: 'Last synchronisation failed: {e}', loadFailed: 'Could not load: {e}',
+                    saveFailed: 'Could not save: {e}', synced: 'Playlists synchronised.', syncFailed: 'Could not synchronise: {e}'
+                },
+                fr: {
+                    status: 'État', data: 'Données', override: 'Surcharge locale', found: 'Titres trouvés', lastSync: 'Dernière synchronisation',
+                    syncNow: 'Synchroniser les playlists maintenant', open: 'Ouvrir la timeline',
+                    missingTitle: 'Titres non trouvés', missingNone: 'Tous les titres sortis sont dans la bibliothèque.',
+                    colTitle: 'Titre', colType: 'Type',
+                    missingHelp: "Le rapprochement se fait par tmdbId, puis imdbId. Corrigez les identifiants dans les métadonnées de l'élément, puis synchronisez.",
+                    settings: 'Réglages', allLibraries: 'Toutes les bibliothèques Films et Séries', includeShorts: 'Inclure les courts métrages',
+                    includeUpcoming: 'Inclure les titres à venir', enablePlaylists: 'Activer les playlists',
+                    showInMenu: 'Afficher la timeline sous Médias dans le menu latéral',
+                    showInMenuHelp: 'Nécessite les plugins Plugin Pages et File Transformation. Prend effet au prochain chargement du client web.',
+                    seerrUrl: 'Adresse de Jellyseerr', seerrUrlHelp: 'Laissez vide pour masquer le bouton Demander.',
+                    seerrKey: 'Clé API de Jellyseerr',
+                    seerrKeyHelp: "Réglages Jellyseerr, Général. Les demandes sont faites au nom de l'utilisateur Jellyseerr lié au compte Jellyfin, avec ses droits et son quota.",
+                    owner: 'Propriétaire des playlists', firstAdmin: 'Premier administrateur',
+                    releaseName: 'Nom de la playlist en ordre de sortie', chronoName: 'Nom de la playlist en ordre chronologique',
+                    namesHelp: 'Laissez vide pour un nom dans la langue du serveur.',
+                    save: 'Enregistrer', never: 'jamais', embedded: 'embarquées', overrideActive: 'surcharge locale', overrideMissing: 'absente',
+                    upcoming: '{n} à venir, non comptés', overrideError: 'Surcharge locale ignorée : {e}',
+                    syncError: 'Échec de la dernière synchronisation : {e}', loadFailed: 'Chargement impossible : {e}',
+                    saveFailed: 'Enregistrement impossible : {e}', synced: 'Playlists synchronisées.', syncFailed: 'Synchronisation impossible : {e}'
+                }
+            };
+
+            // the dashboard puts its display language on <html lang>
+            var language = document.documentElement.lang || 'en';
+            var T = STRINGS[language.split('-')[0].toLowerCase()] || STRINGS.en;
+
+            function t(key, values) {
+                return T[key].replace(/\{(\w+)\}/g, function (match, name) {
+                    return values && values[name] !== undefined ? values[name] : match;
+                });
+            }
+
+            function translate() {
+                Array.prototype.forEach.call(page.querySelectorAll('[data-i18n]'), function (el) {
+                    el.textContent = t(el.getAttribute('data-i18n'));
+                });
+                Array.prototype.forEach.call(page.querySelectorAll('[data-i18n-label]'), function (el) {
+                    var text = t(el.getAttribute('data-i18n-label'));
+                    el.setAttribute('label', text);
+                    // emby-input and emby-select copy the attribute into a label once upgraded
+                    var label = page.querySelector('label[for="' + el.id + '"]');
+                    if (label) {
+                        label.textContent = text;
+                    }
+                });
+            }
+
+            function apiUrl(path) {
+                return ApiClient.getUrl(path, { language: language });
+            }
+
             function escapeHtml(text) {
                 var div = document.createElement('div');
                 div.textContent = text == null ? '' : String(text);
@@ -130,11 +213,11 @@
 
             function formatDate(iso) {
                 if (!iso) {
-                    return 'jamais';
+                    return t('never');
                 }
                 // the server sends UTC without a zone marker
                 var date = new Date(/Z|[+-]\d\d:\d\d$/.test(iso) ? iso : iso + 'Z');
-                return date.toLocaleString('fr-FR');
+                return date.toLocaleString(language);
             }
 
             function describeError(error) {
@@ -142,20 +225,17 @@
             }
 
             function showStatus(status) {
-                $('McuDataVersion').textContent = status.DataVersion
-                    + (status.DataSource === 'override' ? ' (surcharge locale)' : ' (embarquées)');
-                $('McuOverridePath').textContent = status.OverridePath
-                    + (status.DataSource === 'override' ? '' : ' (absente)');
+                var override = status.DataSource === 'override';
+                $('McuDataVersion').textContent = status.DataVersion + ' (' + t(override ? 'overrideActive' : 'embedded') + ')';
+                $('McuOverridePath').textContent = status.OverridePath + (override ? '' : ' (' + t('overrideMissing') + ')');
                 $('McuFound').textContent = status.Found + ' / ' + status.Total
-                    + (status.Upcoming ? ' (+ ' + status.Upcoming + ' à venir, non comptés)' : '');
+                    + (status.Upcoming ? ' (+ ' + t('upcoming', { n: status.Upcoming }) + ')' : '');
                 $('McuLastSync').textContent = formatDate(status.LastSyncUtc);
 
                 $('McuOverrideError').hidden = !status.OverrideError;
-                $('McuOverrideError').textContent = status.OverrideError
-                    ? 'Surcharge locale ignorée : ' + status.OverrideError : '';
+                $('McuOverrideError').textContent = status.OverrideError ? t('overrideError', { e: status.OverrideError }) : '';
                 $('McuSyncError').hidden = !status.LastSyncError;
-                $('McuSyncError').textContent = status.LastSyncError
-                    ? 'Échec de la dernière synchronisation : ' + status.LastSyncError : '';
+                $('McuSyncError').textContent = status.LastSyncError ? t('syncError', { e: status.LastSyncError }) : '';
 
                 var missing = status.Missing || [];
                 $('McuMissingEmpty').hidden = missing.length > 0;
@@ -167,7 +247,7 @@
             }
 
             function loadStatus() {
-                return ApiClient.getJSON(ApiClient.getUrl('McuTimeline/status')).then(showStatus);
+                return ApiClient.getJSON(apiUrl('McuTimeline/status')).then(showStatus);
             }
 
             function renderLibraries(folders, selected) {
@@ -187,7 +267,7 @@
 
             function renderOwners(users, ownerId) {
                 var admins = users.filter(function (u) { return u.Policy && u.Policy.IsAdministrator; });
-                $('McuOwner').innerHTML = '<option value="">Premier administrateur</option>' + admins.map(function (u) {
+                $('McuOwner').innerHTML = '<option value="">' + escapeHtml(t('firstAdmin')) + '</option>' + admins.map(function (u) {
                     return '<option value="' + escapeHtml(u.Id) + '">' + escapeHtml(u.Name) + '</option>';
                 }).join('');
                 $('McuOwner').value = ownerId || '';
@@ -208,18 +288,21 @@
                     $('McuIncludeUpcoming').checked = config.IncludeUpcoming;
                     $('McuEnablePlaylists').checked = config.EnablePlaylists;
                     renderOwners(results[2] || [], config.PlaylistOwnerId);
-                    $('McuReleaseName').value = config.ReleasePlaylistName;
-                    $('McuChronoName').value = config.ChronologicalPlaylistName;
+                    $('McuReleaseName').value = config.ReleasePlaylistName || '';
+                    $('McuChronoName').value = config.ChronologicalPlaylistName || '';
+                    $('McuShowInPluginPages').checked = config.ShowInPluginPages;
+                    $('McuJellyseerrUrl').value = config.JellyseerrUrl || '';
+                    $('McuJellyseerrApiKey').value = config.JellyseerrApiKey || '';
                 });
             }
 
+            translate();
+
             page.addEventListener('viewshow', function () {
+                translate();
                 Dashboard.showLoadingMsg();
-                // relative to /web/, so it works behind any address and base URL
-                $('McuSnippet').textContent = '<iframe src="../McuTimeline/page" title="MCU"'
-                    + ' style="width:100%;height:calc(100vh - 5rem);border:0;display:block"></iframe>';
                 Promise.all([loadSettings(), loadStatus()]).catch(function (error) {
-                    Dashboard.alert('Chargement impossible : ' + describeError(error));
+                    Dashboard.alert(t('loadFailed', { e: describeError(error) }));
                 }).then(function () {
                     Dashboard.hideLoadingMsg();
                 });
@@ -240,13 +323,16 @@
                     config.PlaylistOwnerId = $('McuOwner').value;
                     config.ReleasePlaylistName = $('McuReleaseName').value.trim();
                     config.ChronologicalPlaylistName = $('McuChronoName').value.trim();
+                    config.ShowInPluginPages = $('McuShowInPluginPages').checked;
+                    config.JellyseerrUrl = $('McuJellyseerrUrl').value.trim();
+                    config.JellyseerrApiKey = $('McuJellyseerrApiKey').value.trim();
                     return ApiClient.updatePluginConfiguration(pluginId, config);
                 }).then(function (result) {
                     Dashboard.processPluginConfigurationUpdateResult(result);
                     return loadStatus();
                 }).catch(function (error) {
                     Dashboard.hideLoadingMsg();
-                    Dashboard.alert('Enregistrement impossible : ' + describeError(error));
+                    Dashboard.alert(t('saveFailed', { e: describeError(error) }));
                 });
                 return false;
             });
@@ -255,22 +341,22 @@
                 Dashboard.showLoadingMsg();
                 ApiClient.ajax({
                     type: 'POST',
-                    url: ApiClient.getUrl('McuTimeline/sync'),
+                    url: apiUrl('McuTimeline/sync'),
                     dataType: 'json'
                 }).then(function (status) {
                     showStatus(status);
                     Dashboard.hideLoadingMsg();
                     if (!status.LastSyncError) {
-                        Dashboard.alert('Playlists synchronisées.');
+                        Dashboard.alert(t('synced'));
                     }
                 }, function (error) {
                     Dashboard.hideLoadingMsg();
-                    Dashboard.alert('Synchronisation impossible : ' + describeError(error));
+                    Dashboard.alert(t('syncFailed', { e: describeError(error) }));
                 });
             });
 
             $('McuOpenButton').addEventListener('click', function () {
-                window.open(ApiClient.serverAddress().replace(/\/$/, '') + '/McuTimeline/page', '_blank');
+                location.hash = '#/userpluginsettings.html?pageUrl=/McuTimeline/page';
             });
         })();
     </script>

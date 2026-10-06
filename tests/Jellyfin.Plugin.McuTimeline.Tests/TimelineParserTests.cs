@@ -19,7 +19,8 @@ public class TimelineParserTests
               "storyYear": "1943-1945",
               "phase": 1,
               "saga": "infinity",
-              "era": "origins"
+              "era": "origins",
+              "accentColor": "#4477CB"
             },
             {
               "id": "loki-s1",
@@ -49,11 +50,13 @@ public class TimelineParserTests
         Assert.Equal(EntryType.Movie, cap.Type);
         Assert.Equal(1771, cap.TmdbId);
         Assert.Equal(new DateOnly(2011, 7, 22), cap.ReleaseDate);
-        Assert.Equal("1943-1945", cap.StoryYear);
+        Assert.Equal("1943-1945", cap.StoryYear?.Default);
         Assert.Equal("origins", cap.Era);
+        Assert.Equal("#4477CB", cap.AccentColor);
+        Assert.Null(data.Items[1].AccentColor);
         Assert.Empty(cap.Seasons);
         Assert.Equal([1], data.Items[1].Seasons);
-        Assert.Equal("Hors du temps.", data.Items[1].Note);
+        Assert.Equal("Hors du temps.", data.Items[1].Note?.Default);
     }
 
     [Fact]
@@ -64,6 +67,7 @@ public class TimelineParserTests
         var data = TimelineParser.Parse(json);
 
         Assert.NotEmpty(data.Items);
+        Assert.All(data.Items, e => Assert.NotNull(e.AccentColor));
     }
 
     [Theory]
@@ -77,6 +81,8 @@ public class TimelineParserTests
     [InlineData("\"chronoOrder\": 10,", "", "\"chronoOrder\" is required")]
     [InlineData("\"id\": \"loki-s1\"", "\"id\": \"captain-america-first-avenger\"", "Duplicate id")]
     [InlineData("\"storyYear\": \"1943-1945\",", "\"storyYear\": \"1943-1945\", \"seasons\": [1],", "seasons is only allowed on a series")]
+    [InlineData("\"accentColor\": \"#4477CB\"", "\"accentColor\": \"blue\"", "is not a #RRGGBB colour")]
+    [InlineData("\"accentColor\": \"#4477CB\"", "\"accentColor\": \"#4477CG\"", "is not a #RRGGBB colour")]
     public void Parse_InvalidEntry_FailsWithAClearMessage(string from, string to, string expected)
     {
         var json = ReplaceFirst(Valid, from, to);

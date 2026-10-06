@@ -33,17 +33,24 @@ public class TimelineViewBuilder
     /// Builds the timeline for a user.
     /// </summary>
     /// <param name="user">Calling user.</param>
+    /// <param name="language">Web client language, picks the texts of the data file.</param>
     /// <returns>Data version and entries.</returns>
-    public (string Version, IReadOnlyList<TimelineItemDto> Items) Build(User user)
+    public (string Version, IReadOnlyList<TimelineItemDto> Items) Build(User user, string? language = null)
     {
         var snapshot = _matcher.GetSnapshot();
         var today = DateOnly.FromDateTime(DateTime.Now);
+        var visible = VisibleEntries(snapshot.Source.Data, today).ToList();
+        var releaseRank = Ranks(visible, TimelineOrder.Release);
+        var chronoRank = Ranks(visible, TimelineOrder.Chronological);
         var items = new List<TimelineItemDto>();
 
-        foreach (var entry in VisibleEntries(snapshot.Source.Data, today))
+        foreach (var entry in visible)
         {
             var owned = ResolveOwned(snapshot, entry, user);
-            items.Add(owned is null ? ToDto(entry, entry.IsUpcoming(today) ? "upcoming" : "absent") : ToOwnedDto(entry, owned.Value.Item, owned.Value.Playable, user));
+            var dto = owned is null
+                ? ToDto(entry, entry.IsUpcoming(today) ? "upcoming" : "absent", language)
+                : ToOwnedDto(entry, owned.Value.Item, owned.Value.Playable, user, language);
+            items.Add(dto with { ReleaseRank = releaseRank[entry.Id], ChronoRank = chronoRank[entry.Id] });
         }
 
         return (snapshot.Source.Data.Version, items);
@@ -78,6 +85,39 @@ public class TimelineViewBuilder
     }
 
     /// <summary>
+    /// Marks every item of an entry as played or unplayed: the movie, or the episodes of
+    /// the seasons the entry covers.
+    /// </summary>
+    /// <param name="entryId">Entry id.</param>
+    /// <param name="user">Calling user.</param>
+    /// <param name="played">True to mark as played.</param>
+    /// <param name="language">Web client language.</param>
+    /// <returns>The entry as it now stands, or null when the user does not have it.</returns>
+    public TimelineItemDto? SetPlayed(string entryId, User user, bool played, string? language)
+    {
+        var snapshot = _matcher.GetSnapshot();
+        var entry = snapshot.Source.Data.Items.FirstOrDefault(e => string.Equals(e.Id, entryId, StringComparison.Ordinal));
+        if (entry is null || ResolveOwned(snapshot, entry, user) is not { } owned)
+        {
+            return null;
+        }
+
+        foreach (var item in owned.Playable)
+        {
+            if (played)
+            {
+                item.MarkPlayed(user, DateTime.UtcNow, resetPosition: true);
+            }
+            else
+            {
+                item.MarkUnplayed(user);
+            }
+        }
+
+        return Build(user, language).Items.FirstOrDefault(i => string.Equals(i.Id, entryId, StringComparison.Ordinal));
+    }
+
+    /// <summary>
     /// Lists the entries shown with the current settings.
     /// </summary>
     /// <param name="data">Timeline data.</param>
@@ -98,6 +138,13 @@ public class TimelineViewBuilder
     /// <param name="type">Entry type.</param>
     /// <returns>movie, series or short.</returns>
     public static string TypeName(EntryType type) => type.ToString().ToLowerInvariant();
+
+    private static Dictionary<string, int> Ranks(IEnumerable<TimelineEntry> entries, TimelineOrder order)
+    {
+        return TimelineSorter.Sort(entries, order)
+            .Select((entry, index) => (entry.Id, index))
+            .ToDictionary(x => x.Id, x => x.index, StringComparer.Ordinal);
+    }
 
     private (BaseItem Item, IReadOnlyList<BaseItem> Playable)? ResolveOwned(MatchSnapshot snapshot, TimelineEntry entry, User user)
     {
@@ -131,7 +178,7 @@ public class TimelineViewBuilder
         return result;
     }
 
-    private TimelineItemDto ToOwnedDto(TimelineEntry entry, BaseItem item, IReadOnlyList<BaseItem> playable, User user)
+    private TimelineItemDto ToOwnedDto(TimelineEntry entry, BaseItem item, IReadOnlyList<BaseItem> playable, User user, string? language)
     {
         var data = UserDataOf(playable, user);
         var played = playable.Count(i => data.GetValueOrDefault(i.Id) is { Played: true });
@@ -152,7 +199,7 @@ public class TimelineViewBuilder
         }
 
         var all = played == playable.Count;
-        return ToDto(entry, "owned") with
+        return ToDto(entry, "owned", language) with
         {
             JellyfinId = item.Id.ToString("N", CultureInfo.InvariantCulture),
             RunTimeTicks = entry.IsSeries ? null : item.RunTimeTicks,
@@ -163,19 +210,20 @@ public class TimelineViewBuilder
         };
     }
 
-    private static TimelineItemDto ToDto(TimelineEntry entry, string status) => new()
+    private static TimelineItemDto ToDto(TimelineEntry entry, string status, string? language) => new()
     {
         Id = entry.Id,
-        Title = entry.Title,
+        Title = entry.Title.For(language),
         Type = TypeName(entry.Type),
         TmdbId = entry.TmdbId,
         ReleaseDate = entry.ReleaseDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
         ChronoOrder = entry.ChronoOrder,
-        StoryYear = entry.StoryYear,
+        StoryYear = entry.StoryYear?.For(language),
         Phase = entry.Phase,
         Saga = entry.Saga,
         Era = entry.Era,
-        Note = entry.Note,
+        AccentColor = entry.AccentColor,
+        Note = entry.Note?.For(language),
         Seasons = entry.Seasons,
         Status = status
     };

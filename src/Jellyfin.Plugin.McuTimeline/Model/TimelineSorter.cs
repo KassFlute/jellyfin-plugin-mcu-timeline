@@ -1,7 +1,7 @@
 namespace Jellyfin.Plugin.McuTimeline.Model;
 
 /// <summary>
-/// The two orderings. timeline.js sorts the same way, keep them in step.
+/// The two orderings. The timeline gets both as ranks and never sorts on its own.
 /// </summary>
 public static class TimelineSorter
 {

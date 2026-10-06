@@ -3,6 +3,7 @@ using Jellyfin.Data.Enums;
 using Jellyfin.Database.Implementations.Entities;
 using Jellyfin.Database.Implementations.Enums;
 using Jellyfin.Plugin.McuTimeline.Model;
+using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Playlists;
 using MediaBrowser.Model.Playlists;
@@ -20,6 +21,7 @@ public sealed class PlaylistSyncService : IDisposable
     private readonly ILibraryManager _libraryManager;
     private readonly IUserManager _userManager;
     private readonly LibraryMatcher _matcher;
+    private readonly IServerConfigurationManager _configurationManager;
     private readonly ILogger<PlaylistSyncService> _logger;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
@@ -30,20 +32,26 @@ public sealed class PlaylistSyncService : IDisposable
     /// <param name="libraryManager">Library manager.</param>
     /// <param name="userManager">User manager.</param>
     /// <param name="matcher">Library matcher.</param>
+    /// <param name="configurationManager">Server configuration, for the default playlist names.</param>
     /// <param name="logger">Logger.</param>
     public PlaylistSyncService(
         IPlaylistManager playlistManager,
         ILibraryManager libraryManager,
         IUserManager userManager,
         LibraryMatcher matcher,
+        IServerConfigurationManager configurationManager,
         ILogger<PlaylistSyncService> logger)
     {
         _playlistManager = playlistManager;
         _libraryManager = libraryManager;
         _userManager = userManager;
         _matcher = matcher;
+        _configurationManager = configurationManager;
         _logger = logger;
     }
+
+    // playlists are shared by every user, so an unset name follows the server language
+    private bool FrenchServer => _configurationManager.Configuration.UICulture?.StartsWith("fr", StringComparison.OrdinalIgnoreCase) == true;
 
     /// <summary>
     /// Recomputes both playlists. Concurrent calls wait for the running one.
@@ -74,7 +82,7 @@ public sealed class PlaylistSyncService : IDisposable
 
                 settings.ReleasePlaylistId = await SyncOneAsync(
                     settings.ReleasePlaylistId,
-                    settings.ReleasePlaylistName,
+                    NameOr(settings.ReleasePlaylistName, FrenchServer ? "MCU : ordre de sortie" : "MCU: release order"),
                     PlaylistPlanner.Plan(entries, TimelineOrder.Release, ItemsOf),
                     owner).ConfigureAwait(false);
 
@@ -82,7 +90,7 @@ public sealed class PlaylistSyncService : IDisposable
 
                 settings.ChronologicalPlaylistId = await SyncOneAsync(
                     settings.ChronologicalPlaylistId,
-                    settings.ChronologicalPlaylistName,
+                    NameOr(settings.ChronologicalPlaylistName, FrenchServer ? "MCU : ordre chronologique" : "MCU: story order"),
                     PlaylistPlanner.Plan(entries, TimelineOrder.Chronological, ItemsOf),
                     owner).ConfigureAwait(false);
 
@@ -159,4 +167,6 @@ public sealed class PlaylistSyncService : IDisposable
             .OrderBy(u => u.InternalId)
             .FirstOrDefault();
     }
+
+    private static string NameOr(string name, string fallback) => string.IsNullOrWhiteSpace(name) ? fallback : name;
 }

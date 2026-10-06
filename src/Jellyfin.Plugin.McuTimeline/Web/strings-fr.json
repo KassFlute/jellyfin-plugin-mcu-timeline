@@ -1,50 +1,134 @@
 {
   "locale": "fr-FR",
-  "pageTitle": "MCU",
+  "pageTitle": "Univers Marvel",
+  "railLabel": "Timeline de l'univers Marvel",
   "orderLabel": "Ordre d'affichage",
   "orderRelease": "Ordre de sortie",
   "orderChrono": "Ordre chronologique",
-  "typeLabel": "Type de contenu",
-  "typeAll": "Tout",
-  "typeMovies": "Films",
-  "typeSeries": "Séries",
-  "hideMissing": "Masquer ce que je ne possède pas",
+  "filtersLabel": "Filtres",
+  "typeLabel": "Type",
+  "types": {
+    "movie": "Films",
+    "series": "Séries",
+    "short": "Courts métrages"
+  },
+  "typeSingular": {
+    "movie": "Film",
+    "series": "Série",
+    "short": "Court métrage"
+  },
+  "phaseLabel": "Phase",
+  "eraLabel": "Époque",
+  "onlyOwned": "Seulement ma bibliothèque",
   "counter": "{seen} / {total} vus",
-  "continue": "Continuer la timeline",
+  "infoButton": "Comprendre la timeline",
+  "close": "Fermer",
+  "previous": "Défiler vers la gauche",
+  "next": "Défiler vers la droite",
+  "upNext": "À regarder ensuite",
+  "nextBadge": "Ensuite",
   "allSeen": "Vous avez tout vu.",
   "play": "Lecture",
-  "playTitle": "Lire {title}",
+  "resume": "Reprendre",
   "openTitle": "Ouvrir la fiche de {title}",
+  "markPlayed": "Marquer comme vu",
+  "markUnplayed": "Marquer comme non vu",
+  "markFailed": "Impossible de changer l'état vu.",
   "playFailed": "Impossible de lancer la lecture.",
+  "request": "Demander",
+  "requesting": "Envoi…",
+  "requestSent": "Demande envoyée à Jellyseerr.",
+  "requestFailed": "La demande a échoué.",
+  "requestErrors": {
+    "notLinked": "Votre compte Jellyfin n'est lié à aucun utilisateur Jellyseerr.",
+    "unreachable": "Jellyseerr est injoignable.",
+    "refused": "Jellyseerr a refusé la demande : {message}"
+  },
+  "requestStatus": {
+    "pending": "Demande en attente",
+    "processing": "Demandé, en cours d'ajout",
+    "available": "Bientôt dans la bibliothèque"
+  },
   "statusOwned": "Dans la bibliothèque",
-  "statusAbsent": "Absent de la bibliothèque",
+  "statusAbsent": "Pas dans la bibliothèque",
   "statusUpcoming": "À venir",
-  "upcomingOn": "À venir · {date}",
+  "toWatch": "À voir",
+  "inProgressShort": "En cours",
+  "upcomingOn": "Sortie le {date}",
   "played": "Vu",
-  "inProgress": "En cours",
+  "inProgress": "En cours · {percent} %",
   "episodes": "{count} épisodes",
   "episode": "1 épisode",
   "seasons": "Saison {list}",
-  "runtimeHours": "{h} h {m} min",
+  "runtimeHours": "{h} h {m}",
   "runtimeMinutes": "{m} min",
-  "storyYear": "En {year}",
-  "noteLabel": "Note de placement",
+  "storyYear": "Se passe en {year}",
   "phase": "Phase {n}",
+  "years": "{from} à {to}",
+  "phaseRange": "Phases {from} à {to}",
   "sagas": {
     "infinity": "La Saga de l'Infini",
     "multiverse": "La Saga du Multivers"
   },
   "eras": {
-    "origins": { "name": "Les origines", "range": "avant 2008" },
-    "avengers": { "name": "L'ère des Avengers", "range": "2008 à 2015" },
-    "fracture": { "name": "La fracture", "range": "2016 à 2018" },
-    "blip": { "name": "Le Blip", "range": "2018 à 2023" },
-    "post-blip": { "name": "L'après-Blip", "range": "2023 et après" }
+    "origins": {
+      "name": "Les origines",
+      "range": "avant 2008"
+    },
+    "avengers": {
+      "name": "L'ère des Avengers",
+      "range": "2008 à 2015"
+    },
+    "fracture": {
+      "name": "La fracture",
+      "range": "2016 à 2018"
+    },
+    "blip": {
+      "name": "Le Blip",
+      "range": "2018 à 2023"
+    },
+    "post-blip": {
+      "name": "L'après-Blip",
+      "range": "2023 et après"
+    }
   },
   "loading": "Chargement de la timeline…",
   "loadFailed": "La timeline n'a pas pu être chargée.",
   "retry": "Réessayer",
   "loginRequired": "Connectez-vous à Jellyfin pour voir la timeline.",
-  "login": "Se connecter",
-  "empty": "Aucun titre ne correspond à ces filtres."
+  "empty": "Aucun titre ne correspond à ces filtres.",
+  "info": {
+    "title": "Comprendre la timeline",
+    "ordersTitle": "Les deux ordres",
+    "orderRelease": "Les titres dans l'ordre où ils sont sortis. C'est l'ordre pensé par Marvel pour découvrir l'univers, avec ses surprises intactes.",
+    "orderChrono": "Les titres dans l'ordre où l'histoire se déroule, de l'Antiquité à aujourd'hui. Idéal pour un deuxième visionnage. Certains placements sont discutés, une note l'indique alors sur la fiche.",
+    "sagasTitle": "Les sagas",
+    "sagasIntro": "Marvel Studios découpe le MCU en deux grandes sagas, chacune construite autour d'une menace qui grandit de film en film.",
+    "sagaText": {
+      "infinity": "Les Pierres d'Infinité et Thanos, de la naissance d'Iron Man à Avengers : Endgame et ses suites directes.",
+      "multiverse": "Les conséquences d'Endgame et l'ouverture du multivers, jusqu'à Avengers : Secret Wars."
+    },
+    "phasesTitle": "Les phases",
+    "phasesIntro": "Chaque saga se divise en phases, des blocs de quelques années qui se terminent en général par un grand film d'équipe.",
+    "phaseLine": "{years} · {count} titres · de {first} à {last}",
+    "erasTitle": "Les ères",
+    "erasIntro": "En ordre chronologique, la timeline est découpée selon les grandes périodes de l'histoire racontée plutôt que par phase.",
+    "typesTitle": "Les types",
+    "typeText": {
+      "movie": "Les longs métrages sortis au cinéma.",
+      "series": "Les séries Disney+, en live action ou en animation. Une série découpée en plusieurs saisons peut apparaître à plusieurs endroits.",
+      "short": "Les Marvel One-Shots, des courts bonus sortis avec les films, et les Présentations spéciales Marvel."
+    },
+    "legendTitle": "Ce que montrent les affiches",
+    "legend": {
+      "owned": "Dans votre bibliothèque, prêt à regarder.",
+      "progress": "Commencé, la barre montre où vous en êtes.",
+      "played": "Déjà vu.",
+      "absent": "Pas dans votre bibliothèque. Vous pouvez le demander depuis sa fiche en haut de page.",
+      "requested": "Déjà demandé, en attente d'ajout.",
+      "upcoming": "Pas encore sorti, avec sa date prévue."
+    },
+    "keysTitle": "Au clavier",
+    "keys": "Flèches pour passer d'un titre à l'autre, Début et Fin pour aller aux extrémités, Entrée pour ouvrir la fiche."
+  }
 }

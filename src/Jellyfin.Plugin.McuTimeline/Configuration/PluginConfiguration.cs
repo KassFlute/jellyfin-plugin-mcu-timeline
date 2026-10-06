@@ -35,14 +35,32 @@ public class PluginConfiguration : BasePluginConfiguration
     public string PlaylistOwnerId { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the name of the release order playlist.
+    /// Gets or sets the name of the release order playlist. Empty means a default in the
+    /// server language.
     /// </summary>
-    public string ReleasePlaylistName { get; set; } = "MCU : ordre de sortie";
+    public string ReleasePlaylistName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the name of the story order playlist.
+    /// Gets or sets the name of the story order playlist. Empty means a default in the
+    /// server language.
     /// </summary>
-    public string ChronologicalPlaylistName { get; set; } = "MCU : ordre chronologique";
+    public string ChronologicalPlaylistName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the timeline is listed in the side menu
+    /// through the Plugin Pages plugin.
+    /// </summary>
+    public bool ShowInPluginPages { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Jellyseerr address. Empty hides the request button.
+    /// </summary>
+    public string JellyseerrUrl { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the Jellyseerr API key.
+    /// </summary>
+    public string JellyseerrApiKey { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the id of the release order playlist. The plugin only ever touches the

@@ -1,0 +1,134 @@
+{
+  "locale": "en-US",
+  "pageTitle": "Marvel Universe",
+  "railLabel": "Marvel Universe timeline",
+  "orderLabel": "Display order",
+  "orderRelease": "Release order",
+  "orderChrono": "Story order",
+  "filtersLabel": "Filters",
+  "typeLabel": "Type",
+  "types": {
+    "movie": "Movies",
+    "series": "Series",
+    "short": "Shorts"
+  },
+  "typeSingular": {
+    "movie": "Movie",
+    "series": "Series",
+    "short": "Short"
+  },
+  "phaseLabel": "Phase",
+  "eraLabel": "Era",
+  "onlyOwned": "Only my library",
+  "counter": "{seen} / {total} watched",
+  "infoButton": "About this timeline",
+  "close": "Close",
+  "previous": "Scroll left",
+  "next": "Scroll right",
+  "upNext": "Up next",
+  "nextBadge": "Next",
+  "allSeen": "You have seen everything.",
+  "play": "Play",
+  "resume": "Resume",
+  "openTitle": "Open {title}",
+  "markPlayed": "Mark as watched",
+  "markUnplayed": "Mark as unwatched",
+  "markFailed": "Could not change the watched state.",
+  "playFailed": "Could not start playback.",
+  "request": "Request",
+  "requesting": "Sending…",
+  "requestSent": "Request sent to Jellyseerr.",
+  "requestFailed": "The request failed.",
+  "requestErrors": {
+    "notLinked": "Your Jellyfin account is not linked to a Jellyseerr user.",
+    "unreachable": "Jellyseerr cannot be reached.",
+    "refused": "Jellyseerr refused the request: {message}"
+  },
+  "requestStatus": {
+    "pending": "Request pending",
+    "processing": "Requested, being added",
+    "available": "Coming to the library soon"
+  },
+  "statusOwned": "In your library",
+  "statusAbsent": "Not in your library",
+  "statusUpcoming": "Upcoming",
+  "toWatch": "To watch",
+  "inProgressShort": "In progress",
+  "upcomingOn": "Out {date}",
+  "played": "Watched",
+  "inProgress": "In progress · {percent}%",
+  "episodes": "{count} episodes",
+  "episode": "1 episode",
+  "seasons": "Season {list}",
+  "runtimeHours": "{h}h {m}",
+  "runtimeMinutes": "{m} min",
+  "storyYear": "Set in {year}",
+  "phase": "Phase {n}",
+  "years": "{from} to {to}",
+  "phaseRange": "Phases {from} to {to}",
+  "sagas": {
+    "infinity": "The Infinity Saga",
+    "multiverse": "The Multiverse Saga"
+  },
+  "eras": {
+    "origins": {
+      "name": "Origins",
+      "range": "before 2008"
+    },
+    "avengers": {
+      "name": "The Avengers era",
+      "range": "2008 to 2015"
+    },
+    "fracture": {
+      "name": "The fracture",
+      "range": "2016 to 2018"
+    },
+    "blip": {
+      "name": "The Blip",
+      "range": "2018 to 2023"
+    },
+    "post-blip": {
+      "name": "After the Blip",
+      "range": "2023 onwards"
+    }
+  },
+  "loading": "Loading the timeline…",
+  "loadFailed": "The timeline could not be loaded.",
+  "retry": "Retry",
+  "loginRequired": "Sign in to Jellyfin to see the timeline.",
+  "empty": "No title matches these filters.",
+  "info": {
+    "title": "About this timeline",
+    "ordersTitle": "The two orders",
+    "orderRelease": "Titles in the order they came out. This is the order Marvel designed to discover the universe, surprises intact.",
+    "orderChrono": "Titles in the order the story happens, from antiquity to today. Great for a rewatch. Some placements are debated, the title then shows a note.",
+    "sagasTitle": "The sagas",
+    "sagasIntro": "Marvel Studios splits the MCU into two large sagas, each built around a threat that grows from film to film.",
+    "sagaText": {
+      "infinity": "The Infinity Stones and Thanos, from the birth of Iron Man to Avengers: Endgame and its direct follow ups.",
+      "multiverse": "The fallout of Endgame and the opening of the multiverse, up to Avengers: Secret Wars."
+    },
+    "phasesTitle": "The phases",
+    "phasesIntro": "Each saga is split into phases, blocks of a few years that usually end with a big team up film.",
+    "phaseLine": "{years} · {count} titles · from {first} to {last}",
+    "erasTitle": "The eras",
+    "erasIntro": "In story order, the timeline is split by the main periods of the story rather than by phase.",
+    "typesTitle": "The types",
+    "typeText": {
+      "movie": "Feature films released in theaters.",
+      "series": "Disney+ series, live action or animated. A series split across seasons can show up in several places.",
+      "short": "The Marvel One-Shots, short bonus films released with the movies, and the Marvel Special Presentations."
+    },
+    "legendTitle": "What the posters show",
+    "legend": {
+      "owned": "In your library, ready to watch.",
+      "progress": "Started, the bar shows how far you got.",
+      "played": "Already watched.",
+      "absent": "Not in your library. You can request it from the top of the page.",
+      "requested": "Already requested, waiting to be added.",
+      "upcoming": "Not out yet, with its planned date."
+    },
+    "keysTitle": "With a keyboard",
+    "keys": "Arrows move from title to title, Home and End jump to the ends, Enter opens the title."
+  }
+}

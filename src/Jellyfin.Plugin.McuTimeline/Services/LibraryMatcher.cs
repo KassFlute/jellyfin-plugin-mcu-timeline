@@ -96,7 +96,7 @@ public class LibraryMatcher
                 {
                     _logger.LogWarning(
                         "[MCU Timeline] {Title} ({Id}) not found in the library, tmdbId {TmdbId}.",
-                        entry.Title,
+                        entry.Title.Default,
                         entry.Id,
                         entry.TmdbId);
                 }
@@ -110,7 +110,7 @@ public class LibraryMatcher
                 // the series is there but none of the seasons this entry covers
                 _logger.LogWarning(
                     "[MCU Timeline] {Title} ({Id}) found, but no episode of the listed seasons.",
-                    entry.Title,
+                    entry.Title.Default,
                     entry.Id);
                 continue;
             }

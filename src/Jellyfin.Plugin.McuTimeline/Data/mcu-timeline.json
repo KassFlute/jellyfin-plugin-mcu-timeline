@@ -1,17 +1,1243 @@
 {
-  "version": "2026.10.1",
+  "version": "2026.10.2",
   "items": [
     {
+      "id": "eyes-of-wakanda",
+      "title": {
+        "fr": "Eyes of Wakanda",
+        "en": "Eyes of Wakanda"
+      },
+      "type": "series",
+      "tmdbId": 241388,
+      "imdbId": "tt13968252",
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2025-08-01",
+      "chronoOrder": 10,
+      "storyYear": {
+        "fr": "Antiquité à 1896",
+        "en": "Antiquity to 1896"
+      },
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "origins",
+      "accentColor": "#9575CD",
+      "note": {
+        "fr": "Anthologie couvrant plusieurs siècles, placée en tête de la chronologie par Marvel.",
+        "en": "Anthology spanning several centuries, placed first in the timeline by Marvel."
+      }
+    },
+    {
       "id": "captain-america-first-avenger",
-      "title": "Captain America : First Avenger",
+      "title": {
+        "fr": "Captain America : First Avenger",
+        "en": "Captain America: The First Avenger"
+      },
       "type": "movie",
       "tmdbId": 1771,
       "releaseDate": "2011-07-22",
-      "chronoOrder": 10,
+      "chronoOrder": 20,
       "storyYear": "1943-1945",
       "phase": 1,
       "saga": "infinity",
-      "era": "origins"
+      "era": "origins",
+      "accentColor": "#4477CB"
+    },
+    {
+      "id": "one-shot-agent-carter",
+      "title": {
+        "fr": "Marvel One-Shot : Agent Carter",
+        "en": "Marvel One-Shot: Agent Carter"
+      },
+      "type": "short",
+      "tmdbId": 211387,
+      "releaseDate": "2013-09-24",
+      "chronoOrder": 30,
+      "storyYear": "1946",
+      "phase": 2,
+      "saga": "infinity",
+      "era": "origins",
+      "accentColor": "#C75360"
+    },
+    {
+      "id": "captain-marvel",
+      "title": {
+        "fr": "Captain Marvel",
+        "en": "Captain Marvel"
+      },
+      "type": "movie",
+      "tmdbId": 299537,
+      "releaseDate": "2019-03-08",
+      "chronoOrder": 40,
+      "storyYear": "1995",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "origins",
+      "accentColor": "#2E86DE"
+    },
+    {
+      "id": "iron-man",
+      "title": {
+        "fr": "Iron Man",
+        "en": "Iron Man"
+      },
+      "type": "movie",
+      "tmdbId": 1726,
+      "releaseDate": "2008-05-02",
+      "chronoOrder": 50,
+      "storyYear": "2008",
+      "phase": 1,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#EC1538"
+    },
+    {
+      "id": "iron-man-2",
+      "title": {
+        "fr": "Iron Man 2",
+        "en": "Iron Man 2"
+      },
+      "type": "movie",
+      "tmdbId": 10138,
+      "releaseDate": "2010-05-07",
+      "chronoOrder": 60,
+      "storyYear": "2010",
+      "phase": 1,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#D7453C"
+    },
+    {
+      "id": "incredible-hulk",
+      "title": {
+        "fr": "L'Incroyable Hulk",
+        "en": "The Incredible Hulk"
+      },
+      "type": "movie",
+      "tmdbId": 1724,
+      "releaseDate": "2008-06-13",
+      "chronoOrder": 70,
+      "storyYear": "2010",
+      "phase": 1,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#3FA34D"
+    },
+    {
+      "id": "one-shot-thors-hammer",
+      "title": {
+        "fr": "Marvel One-Shot : A Funny Thing Happened on the Way to Thor's Hammer",
+        "en": "Marvel One-Shot: A Funny Thing Happened on the Way to Thor's Hammer"
+      },
+      "type": "short",
+      "tmdbId": 76535,
+      "releaseDate": "2011-10-25",
+      "chronoOrder": 80,
+      "storyYear": "2010",
+      "phase": 1,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#B08D3C"
+    },
+    {
+      "id": "thor",
+      "title": {
+        "fr": "Thor",
+        "en": "Thor"
+      },
+      "type": "movie",
+      "tmdbId": 10195,
+      "releaseDate": "2011-05-06",
+      "chronoOrder": 90,
+      "storyYear": "2010",
+      "phase": 1,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#C9A227"
+    },
+    {
+      "id": "one-shot-the-consultant",
+      "title": {
+        "fr": "Marvel One-Shot : Le Consultant",
+        "en": "Marvel One-Shot: The Consultant"
+      },
+      "type": "short",
+      "tmdbId": 76122,
+      "releaseDate": "2011-09-13",
+      "chronoOrder": 100,
+      "storyYear": "2011",
+      "phase": 1,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#7D8A99"
+    },
+    {
+      "id": "avengers",
+      "title": {
+        "fr": "Avengers",
+        "en": "The Avengers"
+      },
+      "type": "movie",
+      "tmdbId": 24428,
+      "releaseDate": "2012-05-04",
+      "chronoOrder": 110,
+      "storyYear": "2012",
+      "phase": 1,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#4375D3"
+    },
+    {
+      "id": "one-shot-item-47",
+      "title": {
+        "fr": "Marvel One-Shot : Item 47",
+        "en": "Marvel One-Shot: Item 47"
+      },
+      "type": "short",
+      "tmdbId": 119569,
+      "releaseDate": "2012-09-25",
+      "chronoOrder": 120,
+      "storyYear": "2012",
+      "phase": 1,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#93734E"
+    },
+    {
+      "id": "thor-dark-world",
+      "title": {
+        "fr": "Thor : Le Monde des ténèbres",
+        "en": "Thor: The Dark World"
+      },
+      "type": "movie",
+      "tmdbId": 76338,
+      "releaseDate": "2013-11-08",
+      "chronoOrder": 130,
+      "storyYear": "2013",
+      "phase": 2,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#CD513D"
+    },
+    {
+      "id": "iron-man-3",
+      "title": {
+        "fr": "Iron Man 3",
+        "en": "Iron Man 3"
+      },
+      "type": "movie",
+      "tmdbId": 68721,
+      "releaseDate": "2013-05-03",
+      "chronoOrder": 140,
+      "storyYear": "2012",
+      "phase": 2,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#DB4038",
+      "note": {
+        "fr": "Se déroule à Noël 2012, mais Marvel le place après Thor : Le Monde des ténèbres.",
+        "en": "Set at Christmas 2012, but Marvel places it after Thor: The Dark World."
+      }
+    },
+    {
+      "id": "one-shot-all-hail-the-king",
+      "title": {
+        "fr": "Marvel One-Shot : Longue vie au roi",
+        "en": "Marvel One-Shot: All Hail the King"
+      },
+      "type": "short",
+      "tmdbId": 253980,
+      "releaseDate": "2014-02-04",
+      "chronoOrder": 150,
+      "storyYear": "2013",
+      "phase": 2,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#B8892E"
+    },
+    {
+      "id": "captain-america-winter-soldier",
+      "title": {
+        "fr": "Captain America : Le Soldat de l'hiver",
+        "en": "Captain America: The Winter Soldier"
+      },
+      "type": "movie",
+      "tmdbId": 100402,
+      "releaseDate": "2014-04-04",
+      "chronoOrder": 160,
+      "storyYear": "2014",
+      "phase": 2,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#417BB8"
+    },
+    {
+      "id": "guardians-of-the-galaxy",
+      "title": {
+        "fr": "Les Gardiens de la Galaxie",
+        "en": "Guardians of the Galaxy"
+      },
+      "type": "movie",
+      "tmdbId": 118340,
+      "releaseDate": "2014-08-01",
+      "chronoOrder": 170,
+      "storyYear": "2014",
+      "phase": 2,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#E0752D"
+    },
+    {
+      "id": "guardians-of-the-galaxy-vol-2",
+      "title": {
+        "fr": "Les Gardiens de la Galaxie Vol. 2",
+        "en": "Guardians of the Galaxy Vol. 2"
+      },
+      "type": "movie",
+      "tmdbId": 283995,
+      "releaseDate": "2017-05-05",
+      "chronoOrder": 180,
+      "storyYear": "2014",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#E85D9B"
+    },
+    {
+      "id": "i-am-groot",
+      "title": {
+        "fr": "Je s'appelle Groot",
+        "en": "I Am Groot"
+      },
+      "type": "series",
+      "tmdbId": 232125,
+      "seasons": [
+        1,
+        2
+      ],
+      "releaseDate": "2022-08-10",
+      "chronoOrder": 190,
+      "storyYear": "2014",
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "avengers",
+      "accentColor": "#7CB342",
+      "note": {
+        "fr": "Saison 1 en phase 4, saison 2 en phase 5. Marvel les regroupe après Les Gardiens de la Galaxie Vol. 2.",
+        "en": "Season 1 in Phase 4, season 2 in Phase 5. Marvel groups them after Guardians of the Galaxy Vol. 2."
+      }
+    },
+    {
+      "id": "avengers-age-of-ultron",
+      "title": {
+        "fr": "Avengers : L'Ère d'Ultron",
+        "en": "Avengers: Age of Ultron"
+      },
+      "type": "movie",
+      "tmdbId": 99861,
+      "releaseDate": "2015-05-01",
+      "chronoOrder": 200,
+      "storyYear": "2015",
+      "phase": 2,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#8E9AAF"
+    },
+    {
+      "id": "ant-man",
+      "title": {
+        "fr": "Ant-Man",
+        "en": "Ant-Man"
+      },
+      "type": "movie",
+      "tmdbId": 102899,
+      "releaseDate": "2015-07-17",
+      "chronoOrder": 210,
+      "storyYear": "2015",
+      "phase": 2,
+      "saga": "infinity",
+      "era": "avengers",
+      "accentColor": "#D34A3B"
+    },
+    {
+      "id": "captain-america-civil-war",
+      "title": {
+        "fr": "Captain America : Civil War",
+        "en": "Captain America: Civil War"
+      },
+      "type": "movie",
+      "tmdbId": 271110,
+      "releaseDate": "2016-05-06",
+      "chronoOrder": 220,
+      "storyYear": "2016",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "fracture",
+      "accentColor": "#4A7BD0"
+    },
+    {
+      "id": "black-widow",
+      "title": {
+        "fr": "Black Widow",
+        "en": "Black Widow"
+      },
+      "type": "movie",
+      "tmdbId": 497698,
+      "releaseDate": "2021-07-09",
+      "chronoOrder": 230,
+      "storyYear": "2016",
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "fracture",
+      "accentColor": "#E42470",
+      "note": {
+        "fr": "Sorti en phase 4 mais se déroule juste après Civil War.",
+        "en": "Released in Phase 4 but set just after Civil War."
+      }
+    },
+    {
+      "id": "black-panther",
+      "title": {
+        "fr": "Black Panther",
+        "en": "Black Panther"
+      },
+      "type": "movie",
+      "tmdbId": 284054,
+      "releaseDate": "2018-02-16",
+      "chronoOrder": 240,
+      "storyYear": "2016",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "fracture",
+      "accentColor": "#8A5CF5"
+    },
+    {
+      "id": "spider-man-homecoming",
+      "title": {
+        "fr": "Spider-Man : Homecoming",
+        "en": "Spider-Man: Homecoming"
+      },
+      "type": "movie",
+      "tmdbId": 315635,
+      "releaseDate": "2017-07-07",
+      "chronoOrder": 250,
+      "storyYear": "2016",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "fracture",
+      "accentColor": "#DC3A4F"
+    },
+    {
+      "id": "doctor-strange",
+      "title": {
+        "fr": "Doctor Strange",
+        "en": "Doctor Strange"
+      },
+      "type": "movie",
+      "tmdbId": 284052,
+      "releaseDate": "2016-11-04",
+      "chronoOrder": 260,
+      "storyYear": "2016-2017",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "fracture",
+      "accentColor": "#3FBFAE"
+    },
+    {
+      "id": "thor-ragnarok",
+      "title": {
+        "fr": "Thor : Ragnarok",
+        "en": "Thor: Ragnarok"
+      },
+      "type": "movie",
+      "tmdbId": 284053,
+      "releaseDate": "2017-11-03",
+      "chronoOrder": 270,
+      "storyYear": "2017",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "fracture",
+      "accentColor": "#F0A030"
+    },
+    {
+      "id": "ant-man-and-the-wasp",
+      "title": {
+        "fr": "Ant-Man et la Guêpe",
+        "en": "Ant-Man and the Wasp"
+      },
+      "type": "movie",
+      "tmdbId": 363088,
+      "releaseDate": "2018-07-06",
+      "chronoOrder": 280,
+      "storyYear": "2018",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "fracture",
+      "accentColor": "#E2B33C"
+    },
+    {
+      "id": "avengers-infinity-war",
+      "title": {
+        "fr": "Avengers : Infinity War",
+        "en": "Avengers: Infinity War"
+      },
+      "type": "movie",
+      "tmdbId": 299536,
+      "releaseDate": "2018-04-27",
+      "chronoOrder": 290,
+      "storyYear": "2018",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "fracture",
+      "accentColor": "#9F60B9"
+    },
+    {
+      "id": "avengers-endgame",
+      "title": {
+        "fr": "Avengers : Endgame",
+        "en": "Avengers: Endgame"
+      },
+      "type": "movie",
+      "tmdbId": 299534,
+      "releaseDate": "2019-04-26",
+      "chronoOrder": 300,
+      "storyYear": "2018-2023",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "blip",
+      "accentColor": "#8966C7"
+    },
+    {
+      "id": "loki-s1",
+      "title": {
+        "fr": "Loki (saison 1)",
+        "en": "Loki (Season 1)"
+      },
+      "type": "series",
+      "tmdbId": 84958,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2021-06-09",
+      "chronoOrder": 310,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#4CAF50",
+      "note": {
+        "fr": "Hors du temps (TVA). Le Loki de 2012 s'échappe pendant Endgame, d'où ce placement.",
+        "en": "Outside of time (TVA). The 2012 Loki escapes during Endgame, hence this placement."
+      }
+    },
+    {
+      "id": "what-if-s1",
+      "title": {
+        "fr": "What If...? (saison 1)",
+        "en": "What If...? (Season 1)"
+      },
+      "type": "series",
+      "tmdbId": 91363,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2021-08-11",
+      "chronoOrder": 320,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#F4B400",
+      "note": {
+        "fr": "Univers alternatifs.",
+        "en": "Alternate universes."
+      }
+    },
+    {
+      "id": "marvel-zombies",
+      "title": {
+        "fr": "Marvel Zombies",
+        "en": "Marvel Zombies"
+      },
+      "type": "series",
+      "tmdbId": 138505,
+      "imdbId": "tt16027014",
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2025-09-24",
+      "chronoOrder": 330,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#8BC34A",
+      "note": {
+        "fr": "Univers alternatif, suite de l'épisode zombies de What If...? saison 1.",
+        "en": "Alternate universe, follows the zombie episode of What If...? season 1."
+      }
+    },
+    {
+      "id": "wandavision",
+      "title": {
+        "fr": "WandaVision",
+        "en": "WandaVision"
+      },
+      "type": "series",
+      "tmdbId": 85271,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2021-01-15",
+      "chronoOrder": 340,
+      "storyYear": "2023",
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#D83B72"
+    },
+    {
+      "id": "shang-chi",
+      "title": {
+        "fr": "Shang-Chi et la Légende des Dix Anneaux",
+        "en": "Shang-Chi and the Legend of the Ten Rings"
+      },
+      "type": "movie",
+      "tmdbId": 566525,
+      "releaseDate": "2021-09-03",
+      "chronoOrder": 350,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E8A33D"
+    },
+    {
+      "id": "falcon-and-the-winter-soldier",
+      "title": {
+        "fr": "Falcon et le Soldat de l'Hiver",
+        "en": "The Falcon and the Winter Soldier"
+      },
+      "type": "series",
+      "tmdbId": 88396,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2021-03-19",
+      "chronoOrder": 360,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#4C8BF5"
+    },
+    {
+      "id": "spider-man-far-from-home",
+      "title": {
+        "fr": "Spider-Man : Far From Home",
+        "en": "Spider-Man: Far From Home"
+      },
+      "type": "movie",
+      "tmdbId": 429617,
+      "releaseDate": "2019-07-02",
+      "chronoOrder": 370,
+      "storyYear": "2024",
+      "phase": 3,
+      "saga": "infinity",
+      "era": "post-blip",
+      "accentColor": "#E64553",
+      "note": {
+        "fr": "Dernier film de la phase 3, mais se déroule après Endgame.",
+        "en": "Last film of Phase 3, but set after Endgame."
+      }
+    },
+    {
+      "id": "spider-man-no-way-home",
+      "title": {
+        "fr": "Spider-Man : No Way Home",
+        "en": "Spider-Man: No Way Home"
+      },
+      "type": "movie",
+      "tmdbId": 634649,
+      "releaseDate": "2021-12-17",
+      "chronoOrder": 380,
+      "storyYear": "2024",
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E53935",
+      "note": {
+        "fr": "Absent de la liste officielle Disney+ (droits Sony), placé après Far From Home par continuité.",
+        "en": "Missing from the official Disney+ list (Sony rights), placed after Far From Home for continuity."
+      }
+    },
+    {
+      "id": "eternals",
+      "title": {
+        "fr": "Les Éternels",
+        "en": "Eternals"
+      },
+      "type": "movie",
+      "tmdbId": 524434,
+      "releaseDate": "2021-11-05",
+      "chronoOrder": 390,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E6C35C"
+    },
+    {
+      "id": "doctor-strange-multiverse-of-madness",
+      "title": {
+        "fr": "Doctor Strange in the Multiverse of Madness",
+        "en": "Doctor Strange in the Multiverse of Madness"
+      },
+      "type": "movie",
+      "tmdbId": 453395,
+      "releaseDate": "2022-05-06",
+      "chronoOrder": 400,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E0457B"
+    },
+    {
+      "id": "hawkeye",
+      "title": {
+        "fr": "Hawkeye",
+        "en": "Hawkeye"
+      },
+      "type": "series",
+      "tmdbId": 88329,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2021-11-24",
+      "chronoOrder": 410,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#A15BBF"
+    },
+    {
+      "id": "moon-knight",
+      "title": {
+        "fr": "Moon Knight",
+        "en": "Moon Knight"
+      },
+      "type": "series",
+      "tmdbId": 92749,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2022-03-30",
+      "chronoOrder": 420,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#C9D3E0"
+    },
+    {
+      "id": "black-panther-wakanda-forever",
+      "title": {
+        "fr": "Black Panther : Wakanda Forever",
+        "en": "Black Panther: Wakanda Forever"
+      },
+      "type": "movie",
+      "tmdbId": 505642,
+      "releaseDate": "2022-11-11",
+      "chronoOrder": 430,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#7B68EE"
+    },
+    {
+      "id": "echo",
+      "title": {
+        "fr": "Echo",
+        "en": "Echo"
+      },
+      "type": "series",
+      "tmdbId": 122226,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2024-01-09",
+      "chronoOrder": 440,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#D84343"
+    },
+    {
+      "id": "she-hulk",
+      "title": {
+        "fr": "She-Hulk : Avocate",
+        "en": "She-Hulk: Attorney at Law"
+      },
+      "type": "series",
+      "tmdbId": 92783,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2022-08-18",
+      "chronoOrder": 450,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#4CBF6B"
+    },
+    {
+      "id": "ms-marvel",
+      "title": {
+        "fr": "Miss Marvel",
+        "en": "Ms. Marvel"
+      },
+      "type": "series",
+      "tmdbId": 92782,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2022-06-08",
+      "chronoOrder": 460,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#F5B342"
+    },
+    {
+      "id": "thor-love-and-thunder",
+      "title": {
+        "fr": "Thor : Love and Thunder",
+        "en": "Thor: Love and Thunder"
+      },
+      "type": "movie",
+      "tmdbId": 616037,
+      "releaseDate": "2022-07-08",
+      "chronoOrder": 470,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E96FB2"
+    },
+    {
+      "id": "ironheart",
+      "title": {
+        "fr": "Ironheart",
+        "en": "Ironheart"
+      },
+      "type": "series",
+      "tmdbId": 114471,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2025-06-24",
+      "chronoOrder": 480,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E35D3A"
+    },
+    {
+      "id": "werewolf-by-night",
+      "title": {
+        "fr": "Werewolf by Night",
+        "en": "Werewolf by Night"
+      },
+      "type": "short",
+      "tmdbId": 894205,
+      "releaseDate": "2022-10-07",
+      "chronoOrder": 490,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#B0B7C3"
+    },
+    {
+      "id": "guardians-holiday-special",
+      "title": {
+        "fr": "Les Gardiens de la Galaxie : Joyeuses Fêtes",
+        "en": "The Guardians of the Galaxy Holiday Special"
+      },
+      "type": "short",
+      "tmdbId": 774752,
+      "releaseDate": "2022-11-25",
+      "chronoOrder": 500,
+      "phase": 4,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E53950"
+    },
+    {
+      "id": "ant-man-quantumania",
+      "title": {
+        "fr": "Ant-Man et la Guêpe : Quantumania",
+        "en": "Ant-Man and the Wasp: Quantumania"
+      },
+      "type": "movie",
+      "tmdbId": 640146,
+      "releaseDate": "2023-02-17",
+      "chronoOrder": 510,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#4FB0E8"
+    },
+    {
+      "id": "guardians-of-the-galaxy-vol-3",
+      "title": {
+        "fr": "Les Gardiens de la Galaxie Vol. 3",
+        "en": "Guardians of the Galaxy Vol. 3"
+      },
+      "type": "movie",
+      "tmdbId": 447365,
+      "releaseDate": "2023-05-05",
+      "chronoOrder": 520,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#F06292"
+    },
+    {
+      "id": "secret-invasion",
+      "title": {
+        "fr": "Secret Invasion",
+        "en": "Secret Invasion"
+      },
+      "type": "series",
+      "tmdbId": 114472,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2023-06-21",
+      "chronoOrder": 530,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#5DBB63"
+    },
+    {
+      "id": "the-marvels",
+      "title": {
+        "fr": "The Marvels",
+        "en": "The Marvels"
+      },
+      "type": "movie",
+      "tmdbId": 609681,
+      "releaseDate": "2023-11-10",
+      "chronoOrder": 540,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#F2C14E"
+    },
+    {
+      "id": "loki-s2",
+      "title": {
+        "fr": "Loki (saison 2)",
+        "en": "Loki (Season 2)"
+      },
+      "type": "series",
+      "tmdbId": 84958,
+      "seasons": [
+        2
+      ],
+      "releaseDate": "2023-10-05",
+      "chronoOrder": 550,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#66BB6A",
+      "note": {
+        "fr": "Hors du temps (TVA).",
+        "en": "Outside of time (TVA)."
+      }
+    },
+    {
+      "id": "what-if-s2",
+      "title": {
+        "fr": "What If...? (saison 2)",
+        "en": "What If...? (Season 2)"
+      },
+      "type": "series",
+      "tmdbId": 91363,
+      "seasons": [
+        2
+      ],
+      "releaseDate": "2023-12-22",
+      "chronoOrder": 560,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#F9A825",
+      "note": {
+        "fr": "Univers alternatifs.",
+        "en": "Alternate universes."
+      }
+    },
+    {
+      "id": "deadpool-and-wolverine",
+      "title": {
+        "fr": "Deadpool & Wolverine",
+        "en": "Deadpool & Wolverine"
+      },
+      "type": "movie",
+      "tmdbId": 533535,
+      "releaseDate": "2024-07-26",
+      "chronoOrder": 570,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E5383B",
+      "note": {
+        "fr": "Se déroule surtout dans d'autres univers (Terre-10005, le Vide).",
+        "en": "Mostly set in other universes (Earth-10005, the Void)."
+      }
+    },
+    {
+      "id": "agatha-all-along",
+      "title": {
+        "fr": "Agatha All Along",
+        "en": "Agatha All Along"
+      },
+      "type": "series",
+      "tmdbId": 138501,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2024-09-18",
+      "chronoOrder": 580,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#9C6ADE"
+    },
+    {
+      "id": "what-if-s3",
+      "title": {
+        "fr": "What If...? (saison 3)",
+        "en": "What If...? (Season 3)"
+      },
+      "type": "series",
+      "tmdbId": 91363,
+      "seasons": [
+        3
+      ],
+      "releaseDate": "2024-12-22",
+      "chronoOrder": 590,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#FBC02D",
+      "note": {
+        "fr": "Univers alternatifs.",
+        "en": "Alternate universes."
+      }
+    },
+    {
+      "id": "daredevil-born-again-s1",
+      "title": {
+        "fr": "Daredevil : Born Again (saison 1)",
+        "en": "Daredevil: Born Again (Season 1)"
+      },
+      "type": "series",
+      "tmdbId": 202555,
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2025-03-04",
+      "chronoOrder": 600,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#D94343"
+    },
+    {
+      "id": "captain-america-brave-new-world",
+      "title": {
+        "fr": "Captain America : Brave New World",
+        "en": "Captain America: Brave New World"
+      },
+      "type": "movie",
+      "tmdbId": 822119,
+      "releaseDate": "2025-02-14",
+      "chronoOrder": 610,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#5C8DE0"
+    },
+    {
+      "id": "thunderbolts",
+      "title": {
+        "fr": "Thunderbolts*",
+        "en": "Thunderbolts*"
+      },
+      "type": "movie",
+      "tmdbId": 986056,
+      "releaseDate": "2025-05-02",
+      "chronoOrder": 620,
+      "phase": 5,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#B0BEC5"
+    },
+    {
+      "id": "fantastic-four-first-steps",
+      "title": {
+        "fr": "Les 4 Fantastiques : Premiers pas",
+        "en": "The Fantastic Four: First Steps"
+      },
+      "type": "movie",
+      "tmdbId": 617126,
+      "releaseDate": "2025-07-25",
+      "chronoOrder": 630,
+      "phase": 6,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#3D8BFD",
+      "note": {
+        "fr": "Univers alternatif rétro-futuriste (Terre-828), placé ici par Marvel.",
+        "en": "Retro-futuristic alternate universe (Earth-828), placed here by Marvel."
+      }
+    },
+    {
+      "id": "daredevil-born-again-s2",
+      "title": {
+        "fr": "Daredevil : Born Again (saison 2)",
+        "en": "Daredevil: Born Again (Season 2)"
+      },
+      "type": "series",
+      "tmdbId": 202555,
+      "seasons": [
+        2
+      ],
+      "releaseDate": "2026-03-24",
+      "chronoOrder": 640,
+      "phase": 6,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#D74444"
+    },
+    {
+      "id": "wonder-man",
+      "title": {
+        "fr": "Wonder Man",
+        "en": "Wonder Man"
+      },
+      "type": "series",
+      "tmdbId": 198178,
+      "imdbId": "tt21066182",
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2026-01-27",
+      "chronoOrder": 650,
+      "phase": 6,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E63946"
+    },
+    {
+      "id": "punisher-one-last-kill",
+      "title": {
+        "fr": "The Punisher : One Last Kill",
+        "en": "The Punisher: One Last Kill"
+      },
+      "type": "short",
+      "tmdbId": 1439930,
+      "imdbId": "tt36042156",
+      "releaseDate": "2026-05-12",
+      "chronoOrder": 660,
+      "phase": 6,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#CFD8DC",
+      "note": {
+        "fr": "Sorti après la liste officielle de mars 2026. Fait suite à Daredevil : Born Again saison 2.",
+        "en": "Released after the official March 2026 list. Follows Daredevil: Born Again season 2."
+      }
+    },
+    {
+      "id": "visionquest",
+      "title": {
+        "fr": "VisionQuest",
+        "en": "VisionQuest"
+      },
+      "type": "series",
+      "tmdbId": 213375,
+      "imdbId": "tt23112594",
+      "seasons": [
+        1
+      ],
+      "releaseDate": "2026-10-14",
+      "chronoOrder": 670,
+      "phase": 6,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E0B33A",
+      "note": {
+        "fr": "Placement provisoire en attendant la mise à jour officielle de Marvel.",
+        "en": "Provisional placement until Marvel's official update."
+      }
+    },
+    {
+      "id": "spider-man-brand-new-day",
+      "title": {
+        "fr": "Spider-Man : Brand New Day",
+        "en": "Spider-Man: Brand New Day"
+      },
+      "type": "movie",
+      "tmdbId": 969681,
+      "imdbId": "tt22084616",
+      "releaseDate": "2026-07-31",
+      "chronoOrder": 680,
+      "storyYear": "2028",
+      "phase": 6,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#E53945",
+      "note": {
+        "fr": "Sorti après la liste officielle de mars 2026. Se déroule quatre ans après No Way Home.",
+        "en": "Released after the official March 2026 list. Set four years after No Way Home."
+      }
+    },
+    {
+      "id": "avengers-doomsday",
+      "title": {
+        "fr": "Avengers : Doomsday",
+        "en": "Avengers: Doomsday"
+      },
+      "type": "movie",
+      "tmdbId": 1003596,
+      "imdbId": "tt21357150",
+      "releaseDate": "2026-12-18",
+      "chronoOrder": 690,
+      "phase": 6,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#4CAF7A",
+      "note": {
+        "fr": "Se déroule 14 mois après Thunderbolts*. Placement provisoire.",
+        "en": "Set 14 months after Thunderbolts*. Provisional placement."
+      }
+    },
+    {
+      "id": "avengers-secret-wars",
+      "title": {
+        "fr": "Avengers : Secret Wars",
+        "en": "Avengers: Secret Wars"
+      },
+      "type": "movie",
+      "tmdbId": 1003598,
+      "imdbId": "tt21361444",
+      "releaseDate": "2027-12-17",
+      "chronoOrder": 700,
+      "phase": 6,
+      "saga": "multiverse",
+      "era": "post-blip",
+      "accentColor": "#8457FF",
+      "note": {
+        "fr": "Placement provisoire.",
+        "en": "Provisional placement."
+      }
     }
   ]
 }

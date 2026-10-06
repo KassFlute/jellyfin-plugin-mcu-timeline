@@ -1,16 +1,9 @@
-name: '🏗️ Build'
+name: Build
 
 on:
   push:
-    branches:
-      - main
-    paths-ignore:
-      - '**/*.md'
+    branches: [main]
   pull_request:
-    branches:
-      - main
-    paths-ignore:
-      - '**/*.md'
   workflow_dispatch:
 
 permissions:
@@ -18,31 +11,25 @@ permissions:
 
 jobs:
   build:
-    name: Build plugin
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v6
+      - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '9.0.x'
 
-      # kept out of the solution so JPRM publishes the plugin alone
-      - name: Run tests
+      # kept out of the solution so JPRM packages the plugin alone
+      - name: Test
         run: dotnet test tests/Jellyfin.Plugin.McuTimeline.Tests
 
-      - name: Build plugin
+      - name: Build
         uses: oddstr13/jellyfin-plugin-repository-manager@v1.1.1
         id: jprm
         with:
-          dotnet-target: net10.0
+          dotnet-target: net9.0
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7
         with:
           name: mcu-timeline
-          retention-days: 30
-          if-no-files-found: error
           path: ${{ steps.jprm.outputs.artifact }}

@@ -21,7 +21,13 @@ public sealed class TimelineResponse
     public required string UserId { get; init; }
 
     /// <summary>
-    /// Gets the entries, in file order. Sorting and filtering happen in the browser.
+    /// Gets a value indicating whether titles can be requested through Jellyseerr.
+    /// </summary>
+    public bool CanRequest { get; init; }
+
+    /// <summary>
+    /// Gets the entries, in file order. Each one carries its rank in both orders, so the
+    /// page switches order without sorting.
     /// </summary>
     public required IReadOnlyList<TimelineItemDto> Items { get; init; }
 }
@@ -60,6 +66,15 @@ public sealed record TimelineItemDto
 
     /// <summary>Gets the era.</summary>
     public required string Era { get; init; }
+
+    /// <summary>Gets the accent colour, #RRGGBB.</summary>
+    public string? AccentColor { get; init; }
+
+    /// <summary>Gets the position in release order, from 0.</summary>
+    public int ReleaseRank { get; init; }
+
+    /// <summary>Gets the position in story order, from 0.</summary>
+    public int ChronoRank { get; init; }
 
     /// <summary>Gets the placement note.</summary>
     public string? Note { get; init; }
@@ -134,3 +149,17 @@ public sealed class StatusResponse
 /// <param name="TmdbId">TMDB id.</param>
 /// <param name="ImdbId">IMDb id.</param>
 public sealed record MissingTitleDto(string Id, string Title, string Type, int TmdbId, string? ImdbId);
+
+/// <summary>
+/// Outcome of a Jellyseerr request.
+/// </summary>
+/// <param name="Status">pending, processing or available, when the request went through.</param>
+/// <param name="Error">notLinked, unreachable or refused, the page shows the matching text.</param>
+/// <param name="SeerrMessage">Jellyseerr's own message for a refusal, in its language.</param>
+public sealed record RequestResultDto(string? Status, string? Error, string? SeerrMessage);
+
+/// <summary>
+/// Menu entry setting, read by the menu script.
+/// </summary>
+/// <param name="Enabled">Whether the entry is shown under Media.</param>
+public sealed record MenuDto(bool Enabled);

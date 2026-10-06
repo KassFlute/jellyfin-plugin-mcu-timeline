@@ -13,7 +13,7 @@ public sealed class TimelineEntry
     /// <summary>
     /// Gets the displayed title.
     /// </summary>
-    public required string Title { get; init; }
+    public required LocalizedText Title { get; init; }
 
     /// <summary>
     /// Gets the content type.
@@ -48,7 +48,7 @@ public sealed class TimelineEntry
     /// <summary>
     /// Gets the in-universe year shown on the card. Never used for grouping.
     /// </summary>
-    public string? StoryYear { get; init; }
+    public LocalizedText? StoryYear { get; init; }
 
     /// <summary>
     /// Gets the phase, 1 to 6.
@@ -66,9 +66,14 @@ public sealed class TimelineEntry
     public required string Era { get; init; }
 
     /// <summary>
+    /// Gets the accent colour, #RRGGBB, used by the timeline for the selected title.
+    /// </summary>
+    public string? AccentColor { get; init; }
+
+    /// <summary>
     /// Gets the one line explanation for a debatable placement.
     /// </summary>
-    public string? Note { get; init; }
+    public LocalizedText? Note { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether the title is matched against series rather than movies.
