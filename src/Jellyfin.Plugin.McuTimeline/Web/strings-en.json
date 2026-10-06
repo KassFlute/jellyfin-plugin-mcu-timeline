@@ -33,7 +33,10 @@
   "openTitle": "Open {title}",
   "markPlayed": "Mark as watched",
   "markUnplayed": "Mark as unwatched",
-  "markFailed": "Could not change the watched state.",
+  "skip": "Skip",
+  "unskip": "Stop skipping",
+  "skippedLabel": "Skipped",
+  "markFailed": "Could not save the change.",
   "playFailed": "Could not start playback.",
   "request": "Request",
   "requesting": "Sending…",
@@ -123,7 +126,8 @@
     "legend": {
       "owned": "In your library, ready to watch.",
       "progress": "Started, the bar shows how far you got.",
-      "played": "Already watched.",
+      "played": "Already watched, in Jellyfin or elsewhere.",
+      "skipped": "Skipped. Left out of the progression, the green line carries on over it.",
       "absent": "Not in your library. You can request it from the top of the page.",
       "requested": "Already requested, waiting to be added.",
       "upcoming": "Not out yet, with its planned date."

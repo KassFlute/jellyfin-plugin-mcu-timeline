@@ -27,8 +27,6 @@ public class McuTimelineController : ControllerBase
         ["strings-en.json"] = "application/json; charset=utf-8"
     };
 
-    private static readonly string _assetVersion = typeof(McuTimelineController).Assembly.GetName().Version?.ToString() ?? "0";
-
     private readonly TimelineViewBuilder _viewBuilder;
     private readonly LibraryMatcher _matcher;
     private readonly TimelineDataProvider _dataProvider;
@@ -86,7 +84,7 @@ public class McuTimelineController : ControllerBase
     public ContentResult GetPage()
     {
         Response.Headers.CacheControl = "no-cache";
-        var script = $"{Request.PathBase}/McuTimeline/assets/timeline.js?v={_assetVersion}";
+        var script = $"{Request.PathBase}/McuTimeline/assets/timeline.js?v={WebAssetVersion.Value}";
         return Content(
             $"<div class=\"mcuTimelineHost\"></div><script src=\"{script}\"></script>",
             "text/html; charset=utf-8");
@@ -170,12 +168,13 @@ public class McuTimelineController : ControllerBase
     public ActionResult<MenuDto> GetMenu() => new MenuDto(PluginSettings.Current.ShowInPluginPages);
 
     /// <summary>
-    /// Marks an entry as seen by the calling user.
+    /// Marks an entry as seen by the calling user: in Jellyfin when the library has it,
+    /// else as seen elsewhere.
     /// </summary>
     /// <param name="entryId">Entry id.</param>
     /// <param name="language">Web client language.</param>
     /// <response code="200">Done, the entry is returned as it now stands.</response>
-    /// <response code="404">The user does not have this entry.</response>
+    /// <response code="404">Unknown entry, or not released yet.</response>
     /// <returns>The entry.</returns>
     [HttpPost("played/{entryId}")]
     [Authorize]
@@ -190,7 +189,7 @@ public class McuTimelineController : ControllerBase
     /// <param name="entryId">Entry id.</param>
     /// <param name="language">Web client language.</param>
     /// <response code="200">Done, the entry is returned as it now stands.</response>
-    /// <response code="404">The user does not have this entry.</response>
+    /// <response code="404">Unknown entry, or not released yet.</response>
     /// <returns>The entry.</returns>
     [HttpDelete("played/{entryId}")]
     [Authorize]
@@ -393,7 +392,42 @@ public class McuTimelineController : ControllerBase
         return GetStatus(language);
     }
 
-    private async Task<ActionResult<TimelineItemDto>> SetPlayed(string entryId, bool played, string? language)
+    /// <summary>
+    /// Leaves an entry out of the calling user's progression.
+    /// </summary>
+    /// <param name="entryId">Entry id.</param>
+    /// <param name="language">Web client language.</param>
+    /// <response code="200">Done, the entry is returned as it now stands.</response>
+    /// <response code="404">Unknown entry.</response>
+    /// <returns>The entry.</returns>
+    [HttpPost("skipped/{entryId}")]
+    [Authorize]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<ActionResult<TimelineItemDto>> Skip([FromRoute] string entryId, [FromQuery] string? language) =>
+        Change(user => _viewBuilder.SetSkipped(entryId, user, true, language));
+
+    /// <summary>
+    /// Brings an entry back into the calling user's progression.
+    /// </summary>
+    /// <param name="entryId">Entry id.</param>
+    /// <param name="language">Web client language.</param>
+    /// <response code="200">Done, the entry is returned as it now stands.</response>
+    /// <response code="404">Unknown entry.</response>
+    /// <returns>The entry.</returns>
+    [HttpDelete("skipped/{entryId}")]
+    [Authorize]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public Task<ActionResult<TimelineItemDto>> Unskip([FromRoute] string entryId, [FromQuery] string? language) =>
+        Change(user => _viewBuilder.SetSkipped(entryId, user, false, language));
+
+    private Task<ActionResult<TimelineItemDto>> SetPlayed(string entryId, bool played, string? language) =>
+        Change(user => _viewBuilder.SetPlayed(entryId, user, played, language));
+
+    private async Task<ActionResult<TimelineItemDto>> Change(Func<Jellyfin.Database.Implementations.Entities.User, TimelineItemDto?> change)
     {
         var auth = await _authorizationContext.GetAuthorizationInfo(Request).ConfigureAwait(false);
         if (auth.User is null)
@@ -401,7 +435,7 @@ public class McuTimelineController : ControllerBase
             return Unauthorized();
         }
 
-        return _viewBuilder.SetPlayed(entryId, auth.User, played, language) is { } item ? item : NotFound();
+        return change(auth.User) is { } item ? item : NotFound();
     }
 
     private async Task<List<Model.TimelineEntry>?> MissingEntriesAsync()

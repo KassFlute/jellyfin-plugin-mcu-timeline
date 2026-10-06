@@ -33,7 +33,10 @@
   "openTitle": "Ouvrir la fiche de {title}",
   "markPlayed": "Marquer comme vu",
   "markUnplayed": "Marquer comme non vu",
-  "markFailed": "Impossible de changer l'état vu.",
+  "skip": "Ignorer",
+  "unskip": "Ne plus ignorer",
+  "skippedLabel": "Ignoré",
+  "markFailed": "Impossible d'enregistrer le changement.",
   "playFailed": "Impossible de lancer la lecture.",
   "request": "Demander",
   "requesting": "Envoi…",
@@ -123,7 +126,8 @@
     "legend": {
       "owned": "Dans votre bibliothèque, prêt à regarder.",
       "progress": "Commencé, la barre montre où vous en êtes.",
-      "played": "Déjà vu.",
+      "played": "Déjà vu, dans Jellyfin ou ailleurs.",
+      "skipped": "Ignoré. Il sort de la progression et la ligne verte continue par-dessus.",
       "absent": "Pas dans votre bibliothèque. Vous pouvez le demander depuis sa fiche en haut de page.",
       "requested": "Déjà demandé, en attente d'ajout.",
       "upcoming": "Pas encore sorti, avec sa date prévue."

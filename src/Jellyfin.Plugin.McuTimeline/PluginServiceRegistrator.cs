@@ -21,6 +21,7 @@ public class PluginServiceRegistrator : IPluginServiceRegistrator
         serviceCollection.AddSingleton<IScheduledTask, PlaylistSyncTask>();
         serviceCollection.AddHostedService<LibraryChangeListener>();
         serviceCollection.AddSingleton<PosterService>();
+        serviceCollection.AddSingleton<UserMarks>();
         serviceCollection.AddSingleton<JellyseerrClient>();
         serviceCollection.AddHostedService<WebClientIntegration>();
     }

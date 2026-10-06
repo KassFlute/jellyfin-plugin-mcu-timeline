@@ -94,8 +94,11 @@ public sealed record TimelineItemDto
     /// <summary>Gets the number of episodes of a series entry.</summary>
     public int? EpisodeCount { get; init; }
 
-    /// <summary>Gets a value indicating whether the user has seen the whole entry.</summary>
+    /// <summary>Gets a value indicating whether the user has seen the whole entry, in Jellyfin or, for a title the library does not have, elsewhere.</summary>
     public bool Played { get; init; }
+
+    /// <summary>Gets a value indicating whether the user left the entry out of the progression.</summary>
+    public bool Skipped { get; init; }
 
     /// <summary>Gets a value indicating whether the user started but did not finish it.</summary>
     public bool InProgress { get; init; }

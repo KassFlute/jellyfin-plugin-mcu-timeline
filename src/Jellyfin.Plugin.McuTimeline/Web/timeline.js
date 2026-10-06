@@ -2,13 +2,15 @@
     'use strict';
 
     // Plugin Pages appends the page fragment on every visit, so this script can run more
-    // than once in the same web client
-    if (window.McuTimeline) {
+    // than once in the same web client. A newer build, with another ?v=, takes over
+    var src = document.currentScript.src;
+    if (window.McuTimeline && window.McuTimeline.src === src) {
         window.McuTimeline.mountPending();
         return;
     }
 
-    var assets = document.currentScript.src.replace(/[^/]*$/, '');
+    var assets = src.replace(/[^/]*$/, '');
+    var version = src.split('?')[1] || '';
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     var phone = window.matchMedia('(max-width: 639px)');
 
@@ -33,6 +35,7 @@
         send: svg('M2 21 23 12 2 3v7l15 2-15 2z'),
         left: svg('M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z'),
         right: svg('M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z'),
+        eyeOff: svg('M12 7a5 5 0 0 1 4.64 6.83l2.92 2.92A11.8 11.8 0 0 0 23 12c-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16A4.9 4.9 0 0 1 12 7zM2 4.27l2.74 2.74A11.8 11.8 0 0 0 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84L19.73 22 21 20.73 3.27 3zm5.53 5.53 1.55 1.55A3 3 0 0 0 12 15c.22 0 .44-.03.65-.08l1.55 1.55A5 5 0 0 1 7.53 9.8z'),
         close: svg('M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z')
     };
 
@@ -75,8 +78,8 @@
         if (!ready || readyLanguage !== stringsFile()) {
             readyLanguage = stringsFile();
             ready = Promise.all([
-                fetchOk(assets + readyLanguage).then(function (r) { return r.json(); }),
-                fetchOk(assets + 'timeline.css').then(function (r) { return r.text(); })
+                fetchOk(assets + readyLanguage + '?' + version).then(function (r) { return r.json(); }),
+                fetchOk(assets + 'timeline.css?' + version).then(function (r) { return r.text(); })
             ]).then(function (results) {
                 S = results[0];
                 css = results[1];
@@ -237,14 +240,20 @@
 
         // --- item facts ---
 
+        // a title seen elsewhere counts as watched even when the library lacks it
         function stateOf(item) {
-            if (item.status === 'owned') {
-                return item.played ? 'played' : 'owned';
-            }
-            return item.status;
+            return item.played ? 'played' : item.status;
+        }
+
+        // part of the progression: the next title, the counter and the green line
+        function counts(item) {
+            return !item.skipped && (item.status === 'owned' || item.played);
         }
 
         function stateLabel(item) {
+            if (item.played) {
+                return S.played;
+            }
             if (item.status === 'owned') {
                 return item.played ? S.played : item.inProgress ? format(S.inProgress, { percent: Math.round(item.progress * 100) }) : S.statusOwned;
             }
@@ -306,6 +315,9 @@
         function badgeHtml(item) {
             var state = stateOf(item);
             var icon = null;
+            if (item.skipped) {
+                return '<span class="badge" title="' + escapeHtml(S.skippedLabel) + '">' + ICONS.eyeOff + '</span>';
+            }
             if (state === 'played') {
                 icon = ICONS.check;
             } else if (state === 'upcoming') {
@@ -318,12 +330,13 @@
 
         function cardLabel(item) {
             return [item.title, item.releaseDate.slice(0, 4), format(S.phase, { n: item.phase }), S.typeSingular[item.type], stateLabel(item)]
-                .join(', ');
+                .concat(item.skipped ? [S.skippedLabel] : []).join(', ');
         }
 
         function fillCard(li, item) {
             var url = posterUrl(item, 320);
             li.className = 'card state-' + stateOf(item) + (item.inProgress ? ' in-progress' : '')
+                + (item.status === 'owned' ? '' : ' not-owned') + (item.skipped ? ' skipped' : '')
                 + (li.classList.contains('pending') ? ' pending' : '');
             li.style.setProperty('--card-accent', item.accentColor || '#e23636');
             li.innerHTML = '<button type="button" class="card-hit" tabindex="-1" aria-label="' + escapeHtml(cardLabel(item)) + '">'
@@ -448,7 +461,7 @@
         function markNext() {
             var next = null;
             for (var i = 0; i < visible.length; i++) {
-                if (visible[i].status === 'owned' && !visible[i].played) {
+                if (visible[i].status === 'owned' && !visible[i].played && !visible[i].skipped) {
                     next = visible[i];
                     break;
                 }
@@ -465,15 +478,15 @@
             });
         }
 
-        // greens the axis between two watched titles that follow each other, markers in
-        // between included
+        // greens the axis between two watched titles that follow each other. Markers and
+        // skipped titles in between are bridged
         function updateLinks() {
             var items = Array.prototype.slice.call($('.rail').children);
             var played = function (li) { return li.classList.contains('state-played'); };
             items.forEach(function (li) { li.classList.remove('done-in', 'done-out'); });
             var last = null;
             items.forEach(function (li, index) {
-                if (!li.classList.contains('card')) {
+                if (!li.classList.contains('card') || li.classList.contains('skipped')) {
                     return;
                 }
                 if (last !== null && played(items[last]) && played(li)) {
@@ -577,9 +590,9 @@
         }
 
         function updateCounter() {
-            var owned = visible.filter(function (item) { return item.status === 'owned'; });
-            var seen = owned.filter(function (item) { return item.played; }).length;
-            $('.counter').textContent = format(S.counter, { seen: seen, total: owned.length });
+            var counted = visible.filter(counts);
+            var seen = counted.filter(function (item) { return item.played; }).length;
+            $('.counter').textContent = format(S.counter, { seen: seen, total: counted.length });
         }
 
         // --- selection and hero ---
@@ -665,25 +678,35 @@
                 meta.push(format(S.storyYear, { year: item.storyYear }));
             }
 
-            var stateIcon = item.played ? ICONS.check
+            var stateIcon = item.skipped ? ICONS.eyeOff
+                : item.played ? ICONS.check
                 : owned ? ICONS.play
                 : requests[item.id] ? ICONS.hourglass
                 : item.status === 'upcoming' ? ICONS.clock : ICONS.missing;
-            var state = '<p class="state-pill">' + stateIcon + '<span>' + escapeHtml(stateLabel(item)) + '</span>'
+            var state = '<p class="state-pill">' + stateIcon + '<span>' + escapeHtml(item.skipped ? S.skippedLabel + ' · ' + stateLabel(item) : stateLabel(item)) + '</span>'
                 + (item.inProgress ? '<span class="meter" aria-hidden="true"><span style="transform:scaleX(' + item.progress.toFixed(3) + ')"></span></span>' : '')
                 + '</p>';
+
+            function toggle(action, pressed, icon, on, off, onLabel) {
+                var label = pressed ? off : on;
+                return '<button type="button" class="btn btn-toggle" data-action="' + action + '" aria-pressed="' + pressed + '"'
+                    + ' aria-label="' + escapeHtml(label) + '" title="' + escapeHtml(label) + '">'
+                    + icon + '<span>' + escapeHtml(pressed ? onLabel : on) + '</span></button>';
+            }
 
             var actions = '';
             if (owned) {
                 actions += '<button type="button" class="btn btn-primary" data-action="play">' + ICONS.play
-                    + '<span>' + escapeHtml(item.inProgress ? S.resume : S.play) + '</span></button>'
-                    + '<button type="button" class="btn btn-toggle" data-action="played" aria-pressed="' + item.played + '"'
-                    + ' aria-label="' + escapeHtml(item.played ? S.markUnplayed : S.markPlayed) + '" title="' + escapeHtml(item.played ? S.markUnplayed : S.markPlayed) + '">'
-                    + ICONS.check + '<span>' + escapeHtml(item.played ? S.played : S.markPlayed) + '</span></button>';
+                    + '<span>' + escapeHtml(item.inProgress ? S.resume : S.play) + '</span></button>';
             } else if (data.canRequest && !requests[item.id]) {
                 actions += '<button type="button" class="btn btn-primary" data-action="request">' + ICONS.send
                     + '<span>' + escapeHtml(S.request) + '</span></button>';
             }
+            // a title not out yet cannot have been seen
+            if (item.status !== 'upcoming') {
+                actions += toggle('played', item.played, ICONS.check, S.markPlayed, S.markUnplayed, S.played);
+            }
+            actions += toggle('skipped', item.skipped, ICONS.eyeOff, S.skip, S.unskip, S.skippedLabel);
 
             return '<p class="hero-eyebrow">' + escapeHtml(eyebrow) + '</p>'
                 + '<h2 class="hero-title">' + (owned
@@ -752,9 +775,9 @@
             }
         }
 
-        function togglePlayed(item, button) {
+        function toggleMark(kind, on, item, button) {
             button.disabled = true;
-            authFetch(api + '/played/' + encodeURIComponent(item.id) + '?language=' + encodeURIComponent(language()), item.played ? 'DELETE' : 'POST').then(function (response) {
+            authFetch(api + '/' + kind + '/' + encodeURIComponent(item.id) + '?language=' + encodeURIComponent(language()), on ? 'DELETE' : 'POST').then(function (response) {
                 if (!response.ok) {
                     throw new Error('HTTP ' + response.status);
                 }
@@ -808,7 +831,7 @@
         function renderMinimapTrack() {
             var previous = null;
             $('.minimap-track').innerHTML = visible.map(function (item) {
-                var classes = ['m-' + (item.status === 'owned' ? (item.played ? 'played' : item.inProgress ? 'progress' : 'owned') : item.status)];
+                var classes = ['m-' + (item.skipped ? 'skipped' : item.played ? 'played' : item.status === 'owned' ? (item.inProgress ? 'progress' : 'owned') : item.status)];
                 if (previous && groupOf(previous) !== groupOf(item)) {
                     classes.push('group-start');
                 }
@@ -1088,7 +1111,9 @@
                 if (button.dataset.action === 'play') {
                     play(item);
                 } else if (button.dataset.action === 'played') {
-                    togglePlayed(item, button);
+                    toggleMark('played', item.played, item, button);
+                } else if (button.dataset.action === 'skipped') {
+                    toggleMark('skipped', item.skipped, item, button);
                 } else if (button.dataset.action === 'request') {
                     request(item, button);
                 }
@@ -1169,6 +1194,7 @@
                 + legend(null, I.legend.owned, escapeHtml(S.statusOwned))
                 + legend(null, I.legend.progress, escapeHtml(S.resume))
                 + legend(ICONS.check, I.legend.played, escapeHtml(S.played))
+                + legend(ICONS.eyeOff, I.legend.skipped, escapeHtml(S.skippedLabel))
                 + legend(ICONS.missing, I.legend.absent, escapeHtml(S.statusAbsent))
                 + legend(ICONS.hourglass, I.legend.requested, escapeHtml(S.requestStatus.pending))
                 + legend(ICONS.clock, I.legend.upcoming, escapeHtml(S.statusUpcoming))
@@ -1218,7 +1244,7 @@
                 + '</div>'
                 + '<div class="minimap" aria-hidden="true"><div class="minimap-track"></div><div class="minimap-window"></div></div>'
                 + '<div class="minimap-legend" aria-hidden="true">'
-                + [['played', S.played], ['progress', S.inProgressShort], ['owned', S.toWatch], ['absent', S.statusAbsent], ['upcoming', S.statusUpcoming]]
+                + [['played', S.played], ['progress', S.inProgressShort], ['owned', S.toWatch], ['absent', S.statusAbsent], ['upcoming', S.statusUpcoming], ['skipped', S.skippedLabel]]
                     .map(function (entry) { return '<span><i class="swatch m-' + entry[0] + '"></i>' + escapeHtml(entry[1]) + '</span>'; }).join('')
                 + '</div>'
                 + '<dialog class="info" aria-labelledby="mcu-info-title"></dialog>'
@@ -1331,6 +1357,7 @@
     }
 
     window.McuTimeline = {
+        src: src,
         mountPending: function () {
             Array.prototype.forEach.call(document.querySelectorAll('.mcuTimelineHost:not([data-mcu-mounted])'), mount);
         }

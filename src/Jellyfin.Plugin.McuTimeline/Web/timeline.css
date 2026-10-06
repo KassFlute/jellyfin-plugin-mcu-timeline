@@ -120,6 +120,15 @@ button {
     color: var(--state-played);
 }
 
+.btn-toggle[data-action="skipped"][aria-pressed="true"] {
+    border-color: color-mix(in srgb, var(--text) 35%, transparent);
+    background: color-mix(in srgb, var(--text) 12%, transparent);
+}
+
+.btn-toggle[data-action="skipped"][aria-pressed="true"] .icon {
+    color: inherit;
+}
+
 .btn[disabled] {
     cursor: default;
     opacity: .7;
@@ -724,8 +733,23 @@ button {
     opacity: .75;
 }
 
-.state-absent img {
+.not-owned img {
     filter: grayscale(.45);
+}
+
+/* skipped: faded, and the axis carries straight on */
+.card.skipped .poster-frame {
+    opacity: .4;
+}
+
+.card.skipped .card-text {
+    opacity: .5;
+}
+
+.card.skipped .dot {
+    background: var(--bg);
+    border-style: dashed;
+    border-color: color-mix(in srgb, var(--text) 35%, transparent);
 }
 
 .state-upcoming .poster {
@@ -892,8 +916,7 @@ button {
     line-height: 1.25;
 }
 
-.state-absent .card-title,
-.state-upcoming .card-title {
+.not-owned:not(.state-played) .card-title {
     color: var(--text-muted);
 }
 
@@ -969,6 +992,12 @@ button {
 
 .minimap-track span.m-progress {
     background: var(--state-progress);
+}
+
+.minimap-track span.m-skipped,
+.swatch.m-skipped {
+    background: var(--state-absent);
+    transform: scaleY(.34);
 }
 
 .minimap-track span.m-upcoming {

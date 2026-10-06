@@ -18,3 +18,5 @@ artifacts:
 changelog: |-
   The title card keeps the same size whatever the title, so the timeline no longer jumps.
   Watched titles in a row are joined by a green line on the timeline.
+  Titles missing from the library can be marked as watched.
+  Any title can be skipped: it leaves the progression and the green line carries on over it.

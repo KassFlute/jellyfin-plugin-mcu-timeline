@@ -133,7 +133,7 @@ public static class IndexTransformation
 {
     // relative to /web/, so it follows any base URL
     private static readonly string _scriptTag =
-        $"<script defer src=\"../McuTimeline/assets/menu.js?v={typeof(IndexTransformation).Assembly.GetName().Version}\"></script>";
+        $"<script defer src=\"../McuTimeline/assets/menu.js?v={Api.WebAssetVersion.Value}\"></script>";
 
     /// <summary>
     /// Adds menu.js to index.html.

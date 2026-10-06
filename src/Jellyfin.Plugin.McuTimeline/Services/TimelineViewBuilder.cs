@@ -15,6 +15,7 @@ public class TimelineViewBuilder
     private readonly LibraryMatcher _matcher;
     private readonly ILibraryManager _libraryManager;
     private readonly IUserDataManager _userDataManager;
+    private readonly UserMarks _marks;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TimelineViewBuilder"/> class.
@@ -22,8 +23,10 @@ public class TimelineViewBuilder
     /// <param name="matcher">Library matcher.</param>
     /// <param name="libraryManager">Library manager.</param>
     /// <param name="userDataManager">User data manager.</param>
-    public TimelineViewBuilder(LibraryMatcher matcher, ILibraryManager libraryManager, IUserDataManager userDataManager)
+    /// <param name="marks">Seen elsewhere and skipped marks.</param>
+    public TimelineViewBuilder(LibraryMatcher matcher, ILibraryManager libraryManager, IUserDataManager userDataManager, UserMarks marks)
     {
+        _marks = marks;
         _matcher = matcher;
         _libraryManager = libraryManager;
         _userDataManager = userDataManager;
@@ -42,15 +45,24 @@ public class TimelineViewBuilder
         var visible = VisibleEntries(snapshot.Source.Data, today).ToList();
         var releaseRank = Ranks(visible, TimelineOrder.Release);
         var chronoRank = Ranks(visible, TimelineOrder.Chronological);
+        var (watched, skipped) = _marks.Get(user.Id);
         var items = new List<TimelineItemDto>();
 
         foreach (var entry in visible)
         {
             var owned = ResolveOwned(snapshot, entry, user);
-            var dto = owned is null
-                ? ToDto(entry, entry.IsUpcoming(today) ? "upcoming" : "absent", language)
-                : ToOwnedDto(entry, owned.Value.Item, owned.Value.Playable, user, language);
-            items.Add(dto with { ReleaseRank = releaseRank[entry.Id], ChronoRank = chronoRank[entry.Id] });
+            var dto = owned is not null
+                ? ToOwnedDto(entry, owned.Value.Item, owned.Value.Playable, user, language)
+                : entry.IsUpcoming(today)
+                    ? ToDto(entry, "upcoming", language)
+                    // the library owns the play state once it has the title, until then the mark does
+                    : ToDto(entry, "absent", language) with { Played = watched.Contains(entry.Id), Progress = watched.Contains(entry.Id) ? 1 : 0 };
+            items.Add(dto with
+            {
+                ReleaseRank = releaseRank[entry.Id],
+                ChronoRank = chronoRank[entry.Id],
+                Skipped = skipped.Contains(entry.Id)
+            });
         }
 
         return (snapshot.Source.Data.Version, items);
@@ -92,14 +104,26 @@ public class TimelineViewBuilder
     /// <param name="user">Calling user.</param>
     /// <param name="played">True to mark as played.</param>
     /// <param name="language">Web client language.</param>
-    /// <returns>The entry as it now stands, or null when the user does not have it.</returns>
+    /// <returns>The entry as it now stands, or null for an unknown or unreleased entry.</returns>
     public TimelineItemDto? SetPlayed(string entryId, User user, bool played, string? language)
     {
         var snapshot = _matcher.GetSnapshot();
         var entry = snapshot.Source.Data.Items.FirstOrDefault(e => string.Equals(e.Id, entryId, StringComparison.Ordinal));
-        if (entry is null || ResolveOwned(snapshot, entry, user) is not { } owned)
+        if (entry is null)
         {
             return null;
+        }
+
+        if (ResolveOwned(snapshot, entry, user) is not { } owned)
+        {
+            // seen elsewhere: only a released title can have been seen
+            if (entry.IsUpcoming(DateOnly.FromDateTime(DateTime.Now)))
+            {
+                return null;
+            }
+
+            _marks.SetWatched(user.Id, entryId, played);
+            return Find(user, entryId, language);
         }
 
         foreach (var item in owned.Playable)
@@ -114,8 +138,30 @@ public class TimelineViewBuilder
             }
         }
 
-        return Build(user, language).Items.FirstOrDefault(i => string.Equals(i.Id, entryId, StringComparison.Ordinal));
+        return Find(user, entryId, language);
     }
+
+    /// <summary>
+    /// Leaves an entry out of the progression, or brings it back.
+    /// </summary>
+    /// <param name="entryId">Entry id.</param>
+    /// <param name="user">Calling user.</param>
+    /// <param name="skipped">True to leave it out.</param>
+    /// <param name="language">Web client language.</param>
+    /// <returns>The entry as it now stands, or null for an unknown entry.</returns>
+    public TimelineItemDto? SetSkipped(string entryId, User user, bool skipped, string? language)
+    {
+        if (!_matcher.GetSnapshot().Source.Data.Items.Any(e => string.Equals(e.Id, entryId, StringComparison.Ordinal)))
+        {
+            return null;
+        }
+
+        _marks.SetSkipped(user.Id, entryId, skipped);
+        return Find(user, entryId, language);
+    }
+
+    private TimelineItemDto? Find(User user, string entryId, string? language) =>
+        Build(user, language).Items.FirstOrDefault(i => string.Equals(i.Id, entryId, StringComparison.Ordinal));
 
     /// <summary>
     /// Lists the entries shown with the current settings.
