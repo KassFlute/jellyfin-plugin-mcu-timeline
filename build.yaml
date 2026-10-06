@@ -12,7 +12,7 @@ description: >
   clients that cannot show the timeline.
 
 category: "General"
-imageUrl: "https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timeline/main/image.png"
+imageUrl: "https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timeline/main/logo.png"
 artifacts:
   - "Jellyfin.Plugin.McuTimeline.dll"
 changelog: |-

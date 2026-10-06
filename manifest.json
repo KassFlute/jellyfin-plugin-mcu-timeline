@@ -6,8 +6,7 @@
         "overview": "Marvel Cinematic Universe timeline and playlists.",
         "owner": "cassien",
         "category": "General",
-        "imageUrl": "/mcu-timeline/image.png",
-        "image": "image.png",
+        "imageUrl": "https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timeline/main/logo.png",
         "versions": [
             {
                 "version": "1.0.0.0",
