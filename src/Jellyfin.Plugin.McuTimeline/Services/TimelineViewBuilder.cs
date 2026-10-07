@@ -1,5 +1,4 @@
 using System.Globalization;
-using Jellyfin.Database.Implementations.Entities;
 using Jellyfin.Plugin.McuTimeline.Api;
 using Jellyfin.Plugin.McuTimeline.Model;
 using MediaBrowser.Controller.Entities;

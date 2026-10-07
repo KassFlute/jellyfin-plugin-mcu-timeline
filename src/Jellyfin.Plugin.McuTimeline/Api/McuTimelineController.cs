@@ -30,7 +30,7 @@ public class McuTimelineController : ControllerBase
     private readonly TimelineViewBuilder _viewBuilder;
     private readonly LibraryMatcher _matcher;
     private readonly TimelineDataProvider _dataProvider;
-    private readonly PlaylistSyncService _syncService;
+    private readonly SyncService _syncService;
     private readonly IAuthorizationContext _authorizationContext;
     private readonly ISessionManager _sessionManager;
     private readonly IServerApplicationHost _applicationHost;
@@ -43,7 +43,7 @@ public class McuTimelineController : ControllerBase
     /// <param name="viewBuilder">Per user timeline builder.</param>
     /// <param name="matcher">Library matcher.</param>
     /// <param name="dataProvider">Timeline data.</param>
-    /// <param name="syncService">Playlist synchronisation.</param>
+    /// <param name="syncService">Playlist and collection synchronisation.</param>
     /// <param name="authorizationContext">Authorization context of the caller.</param>
     /// <param name="sessionManager">Session manager.</param>
     /// <param name="applicationHost">Server host.</param>
@@ -53,7 +53,7 @@ public class McuTimelineController : ControllerBase
         TimelineViewBuilder viewBuilder,
         LibraryMatcher matcher,
         TimelineDataProvider dataProvider,
-        PlaylistSyncService syncService,
+        SyncService syncService,
         IAuthorizationContext authorizationContext,
         ISessionManager sessionManager,
         IServerApplicationHost applicationHost,
@@ -221,6 +221,34 @@ public class McuTimelineController : ControllerBase
     }
 
     /// <summary>
+    /// Serves the TMDB poster of an entry through the server. Open to all like Jellyfin's
+    /// own images, an img tag carries no token. Only timeline entries are served, so it
+    /// cannot be used to fetch anything else.
+    /// </summary>
+    /// <param name="entryId">Entry id.</param>
+    /// <param name="large">The hero size rather than the card size.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="200">Image returned.</response>
+    /// <response code="404">Unknown entry, or no poster known yet.</response>
+    /// <returns>The image.</returns>
+    [HttpGet("poster/{entryId}")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> GetPoster([FromRoute] string entryId, [FromQuery] bool large, CancellationToken cancellationToken)
+    {
+        var entry = _dataProvider.Get().Data.Items.FirstOrDefault(e => string.Equals(e.Id, entryId, StringComparison.Ordinal));
+        if (entry is null
+            || await _posterService.GetImageFileAsync(entry, large, cancellationToken).ConfigureAwait(false) is not { } path)
+        {
+            return NotFound();
+        }
+
+        Response.Headers.CacheControl = "public, max-age=604800";
+        return PhysicalFile(path, path.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ? "image/png" : MediaTypeNames.Image.Jpeg);
+    }
+
+    /// <summary>
     /// Returns where the titles the calling user does not have stand in Jellyseerr.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -374,7 +402,7 @@ public class McuTimelineController : ControllerBase
     }
 
     /// <summary>
-    /// Synchronises the playlists now.
+    /// Synchronises the playlists and the collection now.
     /// </summary>
     /// <param name="language">Dashboard language, for the titles.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -427,7 +455,7 @@ public class McuTimelineController : ControllerBase
     private Task<ActionResult<TimelineItemDto>> SetPlayed(string entryId, bool played, string? language) =>
         Change(user => _viewBuilder.SetPlayed(entryId, user, played, language));
 
-    private async Task<ActionResult<TimelineItemDto>> Change(Func<Jellyfin.Database.Implementations.Entities.User, TimelineItemDto?> change)
+    private async Task<ActionResult<TimelineItemDto>> Change(Func<User, TimelineItemDto?> change)
     {
         var auth = await _authorizationContext.GetAuthorizationInfo(Request).ConfigureAwait(false);
         if (auth.User is null)

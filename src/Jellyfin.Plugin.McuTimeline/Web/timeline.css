@@ -531,6 +531,28 @@ button {
     display: none;
 }
 
+@media (hover: hover) and (min-width: 640px) {
+    .rail {
+        cursor: grab;
+    }
+}
+
+.rail.dragging,
+.rail.dragging .card-hit {
+    cursor: grabbing;
+    user-select: none;
+}
+
+/* hover effects would flicker under a dragging pointer */
+.rail.dragging .card {
+    pointer-events: none;
+}
+
+.rail img {
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
 .rail-nav {
     position: absolute;
     top: calc(var(--space-4) + var(--poster-w) * .75 - 1.3rem);
@@ -963,6 +985,8 @@ button {
     margin: var(--space-2) var(--space-6) var(--space-2);
     cursor: pointer;
     touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .minimap-track {

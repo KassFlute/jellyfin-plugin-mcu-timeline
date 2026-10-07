@@ -27,6 +27,6 @@ public static class WebAssetVersion
             hash.AppendData(buffer.ToArray());
         }
 
-        return Convert.ToHexStringLower(hash.GetHashAndReset())[..12];
+        return Convert.ToHexString(hash.GetHashAndReset())[..12];
     }
 }

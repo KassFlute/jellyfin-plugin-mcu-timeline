@@ -1,15 +1,18 @@
 ---
 name: "MCU Timeline"
 guid: "7de48f79-4cdb-453f-8ce9-bd22c9e84f6a"
-version: "1.0.1.0"
+# release number. Each Jellyfin version gets its own build, numbered with the Jellyfin
+# minor as fourth part: 1.1.0.9, 1.1.0.10, 1.1.0.11. The release pipeline and
+# scripts/package.sh set targetAbi and framework for each
+version: "1.1.0"
 targetAbi: "10.11.0.0"
 framework: "net9.0"
 owner: "cassien"
-overview: "Marvel Cinematic Universe timeline and playlists."
+overview: "Marvel Cinematic Universe timeline, playlists and collection."
 description: >
   Adds a timeline of the Marvel Cinematic Universe, in release or story order, showing what
-  you own, what you have seen and what is missing. Keeps two matching playlists for the
-  clients that cannot show the timeline.
+  you own, what you have seen and what is missing. Can also keep a playlist for each order
+  and an MCU collection, for the clients that cannot show the timeline.
 
 category: "General"
 imageUrl: "https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timeline/main/logo.png"
@@ -20,3 +23,10 @@ changelog: |-
   Watched titles in a row are joined by a green line on the timeline.
   Titles missing from the library can be marked as watched.
   Any title can be skipped: it leaves the progression and the green line carries on over it.
+  The timeline can be dragged with the mouse, and the bar under it no longer gets stuck.
+  Posters of missing titles load through Jellyfin, for networks that block TMDB.
+  New plugin image.
+  New MCU collection with every title of the library, and its own poster and backdrop.
+  The page, each playlist and the collection have their own switch in the settings, all off
+  on a new install. Turning one off removes it from Jellyfin.
+  Works on Jellyfin 10.9, 10.10 and 10.11.

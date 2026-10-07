@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Jellyfin.Plugin.McuTimeline.Model;
+using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Entities.TV;
@@ -14,9 +16,10 @@ namespace Jellyfin.Plugin.McuTimeline.Services;
 
 /// <summary>
 /// Finds TMDB posters for titles the library does not have, through the TMDb provider
-/// built into Jellyfin, so no extra API key is needed.
+/// built into Jellyfin, so no extra API key is needed. The images are served by Jellyfin
+/// itself: some networks block image.tmdb.org in the browser.
 /// </summary>
-public sealed class PosterService : IDisposable
+public sealed partial class PosterService : IDisposable
 {
     private const string ProviderName = "TheMovieDb";
 
@@ -25,6 +28,7 @@ public sealed class PosterService : IDisposable
 
     private readonly IProviderManager _providerManager;
     private readonly IServerConfigurationManager _configurationManager;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<PosterService> _logger;
     private readonly ConcurrentDictionary<string, CachedPoster> _cache = new(StringComparer.Ordinal);
     private readonly SemaphoreSlim _gate = new(4);
@@ -36,15 +40,23 @@ public sealed class PosterService : IDisposable
     /// </summary>
     /// <param name="providerManager">Provider manager.</param>
     /// <param name="configurationManager">Server configuration, for the metadata language.</param>
+    /// <param name="httpClientFactory">HTTP client factory, to fetch the images.</param>
     /// <param name="logger">Logger.</param>
-    public PosterService(IProviderManager providerManager, IServerConfigurationManager configurationManager, ILogger<PosterService> logger)
+    public PosterService(
+        IProviderManager providerManager,
+        IServerConfigurationManager configurationManager,
+        IHttpClientFactory httpClientFactory,
+        ILogger<PosterService> logger)
     {
         _providerManager = providerManager;
         _configurationManager = configurationManager;
+        _httpClientFactory = httpClientFactory;
         _logger = logger;
     }
 
     private static string? CachePath => Plugin.Instance is { } plugin ? Path.Combine(plugin.DataFolderPath, "posters.json") : null;
+
+    private static string? ImageFolder => Plugin.Instance is { } plugin ? Path.Combine(plugin.DataFolderPath, "posters") : null;
 
     /// <summary>
     /// Returns the poster address of each entry, looking up the ones not known yet.
@@ -80,8 +92,63 @@ public sealed class PosterService : IDisposable
         return result;
     }
 
+    /// <summary>
+    /// Returns the poster image of an entry, downloaded once and then kept on disk.
+    /// </summary>
+    /// <param name="entry">Entry.</param>
+    /// <param name="large">The hero size rather than the card size.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Path of the image, or null when the entry has no poster.</returns>
+    public async Task<string?> GetImageFileAsync(TimelineEntry entry, bool large, CancellationToken cancellationToken)
+    {
+        LoadOnce();
+        var size = large ? "w780" : "w342";
+        if (!_cache.TryGetValue(Key(entry), out var cached) || cached.Url is null || ImageFolder is not { } folder)
+        {
+            return null;
+        }
+
+        // named after the TMDB file, a new poster gets a new file
+        var path = Path.Combine(folder, size + "_" + Path.GetFileName(new Uri(cached.Url).AbsolutePath));
+        if (File.Exists(path))
+        {
+            return path;
+        }
+
+        try
+        {
+            using var response = await _httpClientFactory.CreateClient(NamedClient.Default)
+                .GetAsync(new Uri(TmdbSize().Replace(cached.Url, "/t/p/" + size + "/", 1)), cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode || response.Content.Headers.ContentType?.MediaType?.StartsWith("image/", StringComparison.Ordinal) != true)
+            {
+                _logger.LogWarning("[MCU Timeline] Poster of {Title} not downloaded: HTTP {Status}.", entry.Title.Default, (int)response.StatusCode);
+                return null;
+            }
+
+            Directory.CreateDirectory(folder);
+            var temp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            var file = File.Create(temp);
+            await using (file.ConfigureAwait(false))
+            {
+                await response.Content.CopyToAsync(file, cancellationToken).ConfigureAwait(false);
+            }
+
+            File.Move(temp, path, true);
+            return path;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or IOException or UnauthorizedAccessException or UriFormatException)
+        {
+            _logger.LogWarning(ex, "[MCU Timeline] Poster of {Title} not downloaded.", entry.Title.Default);
+            return null;
+        }
+    }
+
     /// <inheritdoc />
     public void Dispose() => _gate.Dispose();
+
+    [GeneratedRegex("/t/p/[^/]+/")]
+    private static partial Regex TmdbSize();
 
     // keyed on what is looked up, so a corrected tmdbId is looked up again
     private static string Key(TimelineEntry entry) =>

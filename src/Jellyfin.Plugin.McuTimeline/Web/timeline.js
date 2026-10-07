@@ -132,10 +132,6 @@
         return value;
     }
 
-    function tmdbSize(url, size) {
-        return url.replace(/\/t\/p\/[^/]+\//, '/t/p/' + size + '/');
-    }
-
     function scrollBehavior() {
         return reduceMotion.matches ? 'auto' : 'smooth';
     }
@@ -267,7 +263,13 @@
             if (item.status === 'owned') {
                 return client().getImageUrl(item.jellyfinId, { type: 'Primary', maxWidth: width, quality: 90 });
             }
-            return posters[item.id] ? tmdbSize(posters[item.id], width > 400 ? 'w780' : 'w342') : null;
+            if (!posters[item.id]) {
+                return null;
+            }
+            // served by Jellyfin, some networks block image.tmdb.org. The TMDB file name
+            // busts the browser cache when the poster changes
+            return api + '/poster/' + encodeURIComponent(item.id) + '?v=' + encodeURIComponent(posters[item.id].split('/').pop())
+                + (width > 400 ? '&large=true' : '');
         }
 
         function rank(item) {
@@ -341,7 +343,7 @@
             li.style.setProperty('--card-accent', item.accentColor || '#e23636');
             li.innerHTML = '<button type="button" class="card-hit" tabindex="-1" aria-label="' + escapeHtml(cardLabel(item)) + '">'
                 + '<span class="poster"><span class="poster-frame">'
-                + (url ? '<img alt="" loading="lazy" decoding="async" src="' + escapeHtml(url) + '">' : '')
+                + (url ? '<img alt="" loading="lazy" decoding="async" draggable="false" src="' + escapeHtml(url) + '">' : '')
                 + '<span class="fallback-title"' + (url ? ' hidden' : '') + '>' + escapeHtml(item.title) + '</span>'
                 + badgeHtml(item)
                 + (item.inProgress ? '<span class="progress"><span style="transform:scaleX(' + item.progress.toFixed(3) + ')"></span></span>' : '')
@@ -736,7 +738,7 @@
                 var poster = $('.hero-poster');
                 var url = posterUrl(item, 480);
                 poster.className = 'hero-poster' + (item.status === 'owned' ? '' : ' absent');
-                poster.innerHTML = url ? '<img alt="" src="' + escapeHtml(url) + '">' : '';
+                poster.innerHTML = url ? '<img alt="" draggable="false" src="' + escapeHtml(url) + '">' : '';
                 $('.hero-body').innerHTML = heroHtml(item);
                 content.classList.remove('swapping');
             };
@@ -865,6 +867,39 @@
             $('.rail-nav.next').disabled = rail.scrollLeft >= max - 2;
         }
 
+        // --- free scrolling: minimap and dragged rail ---
+
+        var glide = 0;
+        var settleTimer = null;
+
+        function unsnap() {
+            cancelAnimationFrame(glide);
+            glide = 0;
+            clearTimeout(settleTimer);
+            $('.rail').style.scrollSnapType = 'none';
+        }
+
+        // glides to the nearest snap point, then gives snapping back. Turning it back on
+        // straight away makes Chrome jump there
+        function settle() {
+            var rail = $('.rail');
+            var origin = rail.getBoundingClientRect().left + parseFloat(getComputedStyle(rail).scrollPaddingLeft || 0);
+            var max = rail.scrollWidth - rail.clientWidth;
+            var target = rail.scrollLeft;
+            var best = Infinity;
+            Array.prototype.forEach.call(rail.children, function (li) {
+                var left = Math.min(max, Math.max(0, rail.scrollLeft + li.getBoundingClientRect().left - origin));
+                if (Math.abs(left - rail.scrollLeft) < best) {
+                    best = Math.abs(left - rail.scrollLeft);
+                    target = left;
+                }
+            });
+            rail.scrollTo({ left: target, behavior: scrollBehavior() });
+            settleTimer = setTimeout(function () {
+                rail.style.scrollSnapType = '';
+            }, reduceMotion.matches || best < 2 ? 0 : 450);
+        }
+
         function setupMinimap() {
             var minimap = $('.minimap');
             var rail = $('.rail');
@@ -877,9 +912,15 @@
             }
 
             minimap.addEventListener('pointerdown', function (event) {
+                if (event.button !== 0) {
+                    return;
+                }
+                // else the browser starts a text selection or a drag and drop, which steals
+                // the pointer: ghost image, and Chrome's no-drop cursor
+                event.preventDefault();
                 dragging = true;
                 minimap.setPointerCapture(event.pointerId);
-                rail.style.scrollSnapType = 'none';
+                unsnap();
                 jump(event, true);
             });
             minimap.addEventListener('pointermove', function (event) {
@@ -888,11 +929,14 @@
                 }
             });
             function stop() {
-                dragging = false;
-                rail.style.scrollSnapType = '';
+                if (dragging) {
+                    dragging = false;
+                    settle();
+                }
             }
             minimap.addEventListener('pointerup', stop);
             minimap.addEventListener('pointercancel', stop);
+            minimap.addEventListener('lostpointercapture', stop);
 
             var pending = false;
             rail.addEventListener('scroll', function () {
@@ -1095,6 +1139,100 @@
             });
         }
 
+        function stopGlide() {
+            if (glide) {
+                cancelAnimationFrame(glide);
+                glide = 0;
+                settle();
+            }
+        }
+
+        // a mouse drags the rail like a finger. Touch scrolls natively already
+        function setupRailDrag() {
+            var rail = $('.rail');
+            var drag = null;
+
+            function swallowClick(event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+
+            rail.addEventListener('pointerdown', function (event) {
+                stopGlide();
+                if (event.pointerType !== 'mouse' || event.button !== 0 || phone.matches) {
+                    return;
+                }
+                drag = { id: event.pointerId, x: event.clientX, left: rail.scrollLeft, moved: false, samples: [] };
+            });
+
+            rail.addEventListener('pointermove', function (event) {
+                if (!drag || event.pointerId !== drag.id) {
+                    return;
+                }
+                var dx = event.clientX - drag.x;
+                if (!drag.moved) {
+                    // under that it is a click
+                    if (Math.abs(dx) < 6) {
+                        return;
+                    }
+                    drag.moved = true;
+                    rail.setPointerCapture(drag.id);
+                    rail.classList.add('dragging');
+                    unsnap();
+                }
+                rail.scrollLeft = drag.left - dx;
+                drag.samples.push({ x: event.clientX, t: event.timeStamp });
+                if (drag.samples.length > 5) {
+                    drag.samples.shift();
+                }
+            });
+
+            function release(event) {
+                if (!drag || event.pointerId !== drag.id) {
+                    return;
+                }
+                var done = drag;
+                drag = null;
+                if (!done.moved) {
+                    return;
+                }
+                rail.classList.remove('dragging');
+                // the click that ends a drag must not pick a card
+                rail.addEventListener('click', swallowClick, true);
+                setTimeout(function () { rail.removeEventListener('click', swallowClick, true); }, 0);
+
+                var first = done.samples[0];
+                var last = done.samples[done.samples.length - 1];
+                var velocity = first && last.t > first.t && event.timeStamp - last.t < 80 ? (first.x - last.x) / (last.t - first.t) : 0;
+                if (reduceMotion.matches || Math.abs(velocity) < .2) {
+                    settle();
+                    return;
+                }
+                // momentum in px per ms, fading out
+                var previous = performance.now();
+                glide = requestAnimationFrame(function step(now) {
+                    var dt = Math.min(32, now - previous);
+                    previous = now;
+                    var before = rail.scrollLeft;
+                    rail.scrollLeft += velocity * dt;
+                    velocity *= Math.pow(.94, dt / 16);
+                    if (Math.abs(velocity) < .08 || rail.scrollLeft === before) {
+                        glide = 0;
+                        settle();
+                    } else {
+                        glide = requestAnimationFrame(step);
+                    }
+                });
+            }
+
+            rail.addEventListener('pointerup', release);
+            rail.addEventListener('pointercancel', release);
+            rail.addEventListener('dragstart', function (event) {
+                event.preventDefault();
+            });
+            rail.addEventListener('wheel', stopGlide, { passive: true });
+        }
+
         function setupHero() {
             $('.hero').addEventListener('click', function (event) {
                 var item = byId[selectedId];
@@ -1253,6 +1391,7 @@
             setupOrder();
             setupFilters();
             setupRail();
+            setupRailDrag();
             setupHero();
             setupInfo();
             setupMinimap();

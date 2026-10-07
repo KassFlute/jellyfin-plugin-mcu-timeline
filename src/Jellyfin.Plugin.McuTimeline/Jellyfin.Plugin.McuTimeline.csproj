@@ -1,7 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- one build per Jellyfin minor: dotnet build -p:JellyfinAbi=10.10. Each is compiled
+       against the first release of that minor, so it runs on every patch release after it -->
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <JellyfinAbi Condition="'$(JellyfinAbi)' == ''">10.11</JellyfinAbi>
+    <JellyfinPackage>$(JellyfinAbi).0</JellyfinPackage>
+    <TargetFramework Condition="'$(JellyfinAbi)' == '10.11'">net9.0</TargetFramework>
+    <TargetFramework Condition="'$(JellyfinAbi)' != '10.11'">net8.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);JELLYFIN_$(JellyfinAbi.Replace('.', '_'))</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <RootNamespace>Jellyfin.Plugin.McuTimeline</RootNamespace>
     <AssemblyName>Jellyfin.Plugin.McuTimeline</AssemblyName>
     <Nullable>enable</Nullable>
@@ -18,10 +27,10 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Jellyfin.Controller" Version="10.11.11">
+    <PackageReference Include="Jellyfin.Controller" Version="$(JellyfinPackage)">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Jellyfin.Model" Version="10.11.11">
+    <PackageReference Include="Jellyfin.Model" Version="$(JellyfinPackage)">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
@@ -36,6 +45,7 @@
     <None Remove="Configuration\configPage.html" />
     <EmbeddedResource Include="Configuration\configPage.html" />
     <EmbeddedResource Include="Data\mcu-timeline.json" />
+    <EmbeddedResource Include="Data\collection-*.jpg" />
     <EmbeddedResource Include="Web\*" />
   </ItemGroup>
 

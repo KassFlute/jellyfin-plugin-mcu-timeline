@@ -26,6 +26,10 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
         : base(applicationPaths, xmlSerializer)
     {
         Instance = this;
+        if (Configuration.Migrate())
+        {
+            SaveConfiguration();
+        }
     }
 
     /// <summary>
@@ -41,7 +45,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
 
     /// <inheritdoc />
     public override string Description =>
-        "Marvel Cinematic Universe timeline in release or story order, with two matching playlists.";
+        "Marvel Cinematic Universe timeline in release or story order, with matching playlists and a collection.";
 
     /// <inheritdoc />
     public IEnumerable<PluginPageInfo> GetPages()

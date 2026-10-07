@@ -23,6 +23,13 @@ jobs:
       - name: Test
         run: dotnet test tests/Jellyfin.Plugin.McuTimeline.Tests
 
+      # every Jellyfin version the release ships for must still compile
+      - name: Build for Jellyfin 10.9 and 10.10
+        run: |
+          for abi in 10.9 10.10; do
+            dotnet build src/Jellyfin.Plugin.McuTimeline -c Release -p:JellyfinAbi=$abi
+          done
+
       - name: Build
         uses: oddstr13/jellyfin-plugin-repository-manager@v1.1.1
         id: jprm

@@ -18,6 +18,7 @@
         .mcuActions { display: flex; flex-wrap: wrap; gap: .6em; margin-top: 1.2em; }
         .mcuActions .emby-button { margin: 0; }
         .mcuLibraries { margin-left: 2em; }
+        .mcuWarning { color: #ffb74d; }
     </style>
 
     <div data-role="content">
@@ -59,6 +60,39 @@
 
             <form id="McuSettingsForm" class="verticalSection">
                 <div class="sectionTitleContainer flex align-items-center">
+                    <h2 class="sectionTitle" data-i18n="display"></h2>
+                </div>
+
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="McuShowInPluginPages" class="mcuDisplay">
+                        <span data-i18n="showInMenu"></span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription" data-i18n="showInMenuHelp"></div>
+                </div>
+                <div class="checkboxContainer">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="McuEnableRelease" class="mcuDisplay">
+                        <span data-i18n="enableRelease"></span>
+                    </label>
+                </div>
+                <div class="checkboxContainer">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="McuEnableChrono" class="mcuDisplay">
+                        <span data-i18n="enableChrono"></span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="McuEnableCollection" class="mcuDisplay">
+                        <span data-i18n="enableCollection"></span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription" data-i18n="enableCollectionHelp"></div>
+                </div>
+                <div class="fieldDescription" data-i18n="displayHelp"></div>
+                <p id="McuNothingShown" class="mcuWarning" data-i18n="nothingShown" hidden></p>
+
+                <div class="sectionTitleContainer flex align-items-center">
                     <h2 class="sectionTitle" data-i18n="settings"></h2>
                 </div>
 
@@ -82,20 +116,6 @@
                         <span data-i18n="includeUpcoming"></span>
                     </label>
                 </div>
-                <div class="checkboxContainer">
-                    <label>
-                        <input is="emby-checkbox" type="checkbox" id="McuEnablePlaylists">
-                        <span data-i18n="enablePlaylists"></span>
-                    </label>
-                </div>
-
-                <div class="checkboxContainer checkboxContainer-withDescription">
-                    <label>
-                        <input is="emby-checkbox" type="checkbox" id="McuShowInPluginPages">
-                        <span data-i18n="showInMenu"></span>
-                    </label>
-                    <div class="fieldDescription checkboxFieldDescription" data-i18n="showInMenuHelp"></div>
-                </div>
 
                 <div class="inputContainer">
                     <input is="emby-input" type="url" id="McuJellyseerrUrl" data-i18n-label="seerrUrl" placeholder="https://jellyseerr.example.com">
@@ -114,6 +134,9 @@
                 </div>
                 <div class="inputContainer">
                     <input is="emby-input" type="text" id="McuChronoName" data-i18n-label="chronoName">
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="text" id="McuCollectionName" data-i18n-label="collectionName">
                     <div class="fieldDescription" data-i18n="namesHelp"></div>
                 </div>
 
@@ -134,45 +157,55 @@
             var STRINGS = {
                 en: {
                     status: 'Status', data: 'Data', override: 'Local override', found: 'Titles found', lastSync: 'Last synchronisation',
-                    syncNow: 'Synchronise the playlists now', open: 'Open the timeline',
+                    syncNow: 'Synchronise now', open: 'Open the timeline',
                     missingTitle: 'Titles not found', missingNone: 'Every released title is in the library.',
                     colTitle: 'Title', colType: 'Type',
                     missingHelp: 'Titles are matched by tmdbId, then imdbId. Fix the ids in the item metadata, then synchronise.',
                     settings: 'Settings', allLibraries: 'All movie and show libraries', includeShorts: 'Include shorts',
-                    includeUpcoming: 'Include upcoming titles', enablePlaylists: 'Keep the playlists',
-                    showInMenu: 'Show the timeline under Media in the side menu',
+                    includeUpcoming: 'Include upcoming titles',
+                    display: 'Show in Jellyfin',
+                    showInMenu: 'Timeline page, under Media in the side menu',
+                    enableRelease: 'Release order playlist', enableChrono: 'Story order playlist',
+                    enableCollection: 'MCU collection', enableCollectionHelp: 'Every MCU title in the library, in no particular order.',
+                    displayHelp: 'Saving creates what is ticked and deletes the playlists and the collection that are not.',
+                    nothingShown: 'Nothing is ticked: the MCU does not show anywhere in Jellyfin.',
                     showInMenuHelp: 'Needs the Plugin Pages and File Transformation plugins. Applies the next time the web client loads.',
                     seerrUrl: 'Jellyseerr address', seerrUrlHelp: 'Leave empty to hide the request button.',
                     seerrKey: 'Jellyseerr API key',
                     seerrKeyHelp: 'Jellyseerr settings, General. Requests are made as the Jellyseerr user linked to the Jellyfin account, with its rights and quota.',
                     owner: 'Playlist owner', firstAdmin: 'First administrator',
                     releaseName: 'Release order playlist name', chronoName: 'Story order playlist name',
-                    namesHelp: 'Leave empty for a name in the server language.',
+                    collectionName: 'Collection name', namesHelp: 'Leave empty for a default name.',
                     save: 'Save', never: 'never', embedded: 'embedded', overrideActive: 'local override', overrideMissing: 'none',
                     upcoming: '{n} upcoming, not counted', overrideError: 'Local override ignored: {e}',
                     syncError: 'Last synchronisation failed: {e}', loadFailed: 'Could not load: {e}',
-                    saveFailed: 'Could not save: {e}', synced: 'Playlists synchronised.', syncFailed: 'Could not synchronise: {e}'
+                    saveFailed: 'Could not save: {e}', synced: 'Playlists and collection synchronised.', syncFailed: 'Could not synchronise: {e}'
                 },
                 fr: {
                     status: 'État', data: 'Données', override: 'Surcharge locale', found: 'Titres trouvés', lastSync: 'Dernière synchronisation',
-                    syncNow: 'Synchroniser les playlists maintenant', open: 'Ouvrir la timeline',
+                    syncNow: 'Synchroniser maintenant', open: 'Ouvrir la timeline',
                     missingTitle: 'Titres non trouvés', missingNone: 'Tous les titres sortis sont dans la bibliothèque.',
                     colTitle: 'Titre', colType: 'Type',
                     missingHelp: "Le rapprochement se fait par tmdbId, puis imdbId. Corrigez les identifiants dans les métadonnées de l'élément, puis synchronisez.",
                     settings: 'Réglages', allLibraries: 'Toutes les bibliothèques Films et Séries', includeShorts: 'Inclure les courts métrages',
-                    includeUpcoming: 'Inclure les titres à venir', enablePlaylists: 'Activer les playlists',
-                    showInMenu: 'Afficher la timeline sous Médias dans le menu latéral',
+                    includeUpcoming: 'Inclure les titres à venir',
+                    display: 'Afficher dans Jellyfin',
+                    showInMenu: 'Page timeline, sous Médias dans le menu latéral',
+                    enableRelease: 'Playlist en ordre de sortie', enableChrono: 'Playlist en ordre chronologique',
+                    enableCollection: 'Collection MCU', enableCollectionHelp: 'Tous les titres MCU de la bibliothèque, sans ordre particulier.',
+                    displayHelp: "L'enregistrement crée ce qui est coché et supprime les playlists et la collection qui ne le sont pas.",
+                    nothingShown: "Rien n'est coché : le MCU n'apparaît nulle part dans Jellyfin.",
                     showInMenuHelp: 'Nécessite les plugins Plugin Pages et File Transformation. Prend effet au prochain chargement du client web.',
                     seerrUrl: 'Adresse de Jellyseerr', seerrUrlHelp: 'Laissez vide pour masquer le bouton Demander.',
                     seerrKey: 'Clé API de Jellyseerr',
                     seerrKeyHelp: "Réglages Jellyseerr, Général. Les demandes sont faites au nom de l'utilisateur Jellyseerr lié au compte Jellyfin, avec ses droits et son quota.",
                     owner: 'Propriétaire des playlists', firstAdmin: 'Premier administrateur',
                     releaseName: 'Nom de la playlist en ordre de sortie', chronoName: 'Nom de la playlist en ordre chronologique',
-                    namesHelp: 'Laissez vide pour un nom dans la langue du serveur.',
+                    collectionName: 'Nom de la collection', namesHelp: 'Laissez vide pour un nom par défaut.',
                     save: 'Enregistrer', never: 'jamais', embedded: 'embarquées', overrideActive: 'surcharge locale', overrideMissing: 'absente',
                     upcoming: '{n} à venir, non comptés', overrideError: 'Surcharge locale ignorée : {e}',
                     syncError: 'Échec de la dernière synchronisation : {e}', loadFailed: 'Chargement impossible : {e}',
-                    saveFailed: 'Enregistrement impossible : {e}', synced: 'Playlists synchronisées.', syncFailed: 'Synchronisation impossible : {e}'
+                    saveFailed: 'Enregistrement impossible : {e}', synced: 'Playlists et collection synchronisées.', syncFailed: 'Synchronisation impossible : {e}'
                 }
             };
 
@@ -261,6 +294,10 @@
                 }).join('');
             }
 
+            function applyDisplay() {
+                $('McuNothingShown').hidden = page.querySelector('.mcuDisplay:checked') !== null;
+            }
+
             function applyAllLibraries() {
                 $('McuLibraries').hidden = $('McuAllLibraries').checked;
             }
@@ -286,11 +323,15 @@
                     applyAllLibraries();
                     $('McuIncludeShorts').checked = config.IncludeShorts;
                     $('McuIncludeUpcoming').checked = config.IncludeUpcoming;
-                    $('McuEnablePlaylists').checked = config.EnablePlaylists;
+                    $('McuEnableRelease').checked = config.EnableReleasePlaylist;
+                    $('McuEnableChrono').checked = config.EnableChronologicalPlaylist;
+                    $('McuEnableCollection').checked = config.EnableCollection;
+                    $('McuCollectionName').value = config.CollectionName || '';
                     renderOwners(results[2] || [], config.PlaylistOwnerId);
                     $('McuReleaseName').value = config.ReleasePlaylistName || '';
                     $('McuChronoName').value = config.ChronologicalPlaylistName || '';
                     $('McuShowInPluginPages').checked = config.ShowInPluginPages;
+                    applyDisplay();
                     $('McuJellyseerrUrl').value = config.JellyseerrUrl || '';
                     $('McuJellyseerrApiKey').value = config.JellyseerrApiKey || '';
                 });
@@ -309,6 +350,9 @@
             });
 
             $('McuAllLibraries').addEventListener('change', applyAllLibraries);
+            Array.prototype.forEach.call(page.querySelectorAll('.mcuDisplay'), function (input) {
+                input.addEventListener('change', applyDisplay);
+            });
 
             $('McuSettingsForm').addEventListener('submit', function (event) {
                 event.preventDefault();
@@ -319,7 +363,10 @@
                         page.querySelectorAll('.mcuLibrary:checked'), function (input) { return input.value; });
                     config.IncludeShorts = $('McuIncludeShorts').checked;
                     config.IncludeUpcoming = $('McuIncludeUpcoming').checked;
-                    config.EnablePlaylists = $('McuEnablePlaylists').checked;
+                    config.EnableReleasePlaylist = $('McuEnableRelease').checked;
+                    config.EnableChronologicalPlaylist = $('McuEnableChrono').checked;
+                    config.EnableCollection = $('McuEnableCollection').checked;
+                    config.CollectionName = $('McuCollectionName').value.trim();
                     config.PlaylistOwnerId = $('McuOwner').value;
                     config.ReleasePlaylistName = $('McuReleaseName').value.trim();
                     config.ChronologicalPlaylistName = $('McuChronoName').value.trim();
@@ -329,7 +376,12 @@
                     return ApiClient.updatePluginConfiguration(pluginId, config);
                 }).then(function (result) {
                     Dashboard.processPluginConfigurationUpdateResult(result);
-                    return loadStatus();
+                    // creates or deletes what was just switched on or off
+                    Dashboard.showLoadingMsg();
+                    return ApiClient.ajax({ type: 'POST', url: apiUrl('McuTimeline/sync'), dataType: 'json' });
+                }).then(function (status) {
+                    showStatus(status);
+                    Dashboard.hideLoadingMsg();
                 }).catch(function (error) {
                     Dashboard.hideLoadingMsg();
                     Dashboard.alert(t('saveFailed', { e: describeError(error) }));

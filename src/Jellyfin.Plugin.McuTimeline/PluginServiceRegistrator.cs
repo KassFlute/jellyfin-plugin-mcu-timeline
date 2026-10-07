@@ -17,8 +17,8 @@ public class PluginServiceRegistrator : IPluginServiceRegistrator
         serviceCollection.AddSingleton<TimelineDataProvider>();
         serviceCollection.AddSingleton<LibraryMatcher>();
         serviceCollection.AddSingleton<TimelineViewBuilder>();
-        serviceCollection.AddSingleton<PlaylistSyncService>();
-        serviceCollection.AddSingleton<IScheduledTask, PlaylistSyncTask>();
+        serviceCollection.AddSingleton<SyncService>();
+        serviceCollection.AddSingleton<IScheduledTask, SyncTask>();
         serviceCollection.AddHostedService<LibraryChangeListener>();
         serviceCollection.AddSingleton<PosterService>();
         serviceCollection.AddSingleton<UserMarks>();

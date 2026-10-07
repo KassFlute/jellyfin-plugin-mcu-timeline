@@ -3,32 +3,32 @@ using MediaBrowser.Model.Tasks;
 namespace Jellyfin.Plugin.McuTimeline.Services;
 
 /// <summary>
-/// Daily playlist synchronisation. Running it by hand from the dashboard syncs right away.
+/// Daily playlist and collection synchronisation. Running it by hand from the dashboard syncs right away.
 /// </summary>
-public class PlaylistSyncTask : IScheduledTask
+public class SyncTask : IScheduledTask
 {
-    private readonly PlaylistSyncService _syncService;
+    private readonly SyncService _syncService;
     private readonly LibraryMatcher _matcher;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PlaylistSyncTask"/> class.
+    /// Initializes a new instance of the <see cref="SyncTask"/> class.
     /// </summary>
-    /// <param name="syncService">Playlist synchronisation.</param>
+    /// <param name="syncService">Playlist and collection synchronisation.</param>
     /// <param name="matcher">Library matcher.</param>
-    public PlaylistSyncTask(PlaylistSyncService syncService, LibraryMatcher matcher)
+    public SyncTask(SyncService syncService, LibraryMatcher matcher)
     {
         _syncService = syncService;
         _matcher = matcher;
     }
 
     /// <inheritdoc />
-    public string Name => "Synchronise MCU playlists";
+    public string Name => "Synchronise MCU playlists and collection";
 
     /// <inheritdoc />
     public string Key => "McuTimelinePlaylistSync";
 
     /// <inheritdoc />
-    public string Description => "Recomputes the content and order of the two MCU playlists.";
+    public string Description => "Recomputes the MCU playlists and collection, and removes the ones switched off.";
 
     /// <inheritdoc />
     public string Category => "MCU Timeline";
@@ -38,7 +38,11 @@ public class PlaylistSyncTask : IScheduledTask
     {
         yield return new TaskTriggerInfo
         {
+#if JELLYFIN_10_11
             Type = TaskTriggerInfoType.IntervalTrigger,
+#else
+            Type = TaskTriggerInfo.TriggerInterval,
+#endif
             IntervalTicks = TimeSpan.FromDays(1).Ticks
         };
     }

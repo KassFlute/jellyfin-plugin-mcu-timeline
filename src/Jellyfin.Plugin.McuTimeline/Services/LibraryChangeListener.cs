@@ -7,8 +7,8 @@ using Microsoft.Extensions.Logging;
 namespace Jellyfin.Plugin.McuTimeline.Services;
 
 /// <summary>
-/// Drops the match cache and resyncs the playlists when the library changes: after a
-/// full scan, and after the real time monitor adds or removes a title.
+/// Drops the match cache and resyncs the playlists and the collection when the library
+/// changes: after a full scan, and after the real time monitor adds or removes a title.
 /// </summary>
 public sealed class LibraryChangeListener : IHostedService, IDisposable
 {
@@ -25,7 +25,7 @@ public sealed class LibraryChangeListener : IHostedService, IDisposable
     private readonly ILibraryManager _libraryManager;
     private readonly ITaskManager _taskManager;
     private readonly LibraryMatcher _matcher;
-    private readonly PlaylistSyncService _syncService;
+    private readonly SyncService _syncService;
     private readonly ILogger<LibraryChangeListener> _logger;
     private readonly Timer _timer;
 
@@ -35,13 +35,13 @@ public sealed class LibraryChangeListener : IHostedService, IDisposable
     /// <param name="libraryManager">Library manager.</param>
     /// <param name="taskManager">Task manager.</param>
     /// <param name="matcher">Library matcher.</param>
-    /// <param name="syncService">Playlist synchronisation.</param>
+    /// <param name="syncService">Playlist and collection synchronisation.</param>
     /// <param name="logger">Logger.</param>
     public LibraryChangeListener(
         ILibraryManager libraryManager,
         ITaskManager taskManager,
         LibraryMatcher matcher,
-        PlaylistSyncService syncService,
+        SyncService syncService,
         ILogger<LibraryChangeListener> logger)
     {
         _libraryManager = libraryManager;
@@ -114,7 +114,7 @@ public sealed class LibraryChangeListener : IHostedService, IDisposable
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[MCU Timeline] Playlist synchronisation after a library change failed.");
+                _logger.LogError(ex, "[MCU Timeline] Synchronisation after a library change failed.");
             }
         });
     }

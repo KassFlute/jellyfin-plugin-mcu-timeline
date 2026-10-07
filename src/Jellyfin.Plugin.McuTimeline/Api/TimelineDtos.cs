@@ -108,7 +108,7 @@ public sealed record TimelineItemDto
 }
 
 /// <summary>
-/// Administrator view of the matching and the playlists.
+/// Administrator view of the matching, the playlists and the collection.
 /// </summary>
 public sealed class StatusResponse
 {
