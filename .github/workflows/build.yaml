@@ -17,16 +17,19 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '9.0.x'
+          # 10 builds every target, the tests run on 9
+          dotnet-version: |
+            9.0.x
+            10.0.x
 
       # kept out of the solution so JPRM packages the plugin alone
       - name: Test
         run: dotnet test tests/Jellyfin.Plugin.McuTimeline.Tests
 
       # every Jellyfin version the release ships for must still compile
-      - name: Build for Jellyfin 10.9 and 10.10
+      - name: Build for Jellyfin 10.9, 10.10 and 12
         run: |
-          for abi in 10.9 10.10; do
+          for abi in 10.9 10.10 12; do
             dotnet build src/Jellyfin.Plugin.McuTimeline -c Release -p:JellyfinAbi=$abi
           done
 

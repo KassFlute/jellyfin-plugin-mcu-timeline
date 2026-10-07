@@ -6,7 +6,7 @@ A Jellyfin plugin that shows the whole Marvel Cinematic Universe on one timeline
 story order. For the apps that cannot show the timeline, it can also keep a playlist for each
 order and an MCU collection.
 
-Works on Jellyfin 10.9, 10.10 and 10.11. Each server gets the build made for its version.
+Works on Jellyfin 10.9, 10.10, 10.11 and 12. Each server gets the build made for its version.
 
 ## Install
 
@@ -55,13 +55,14 @@ Disagree with an order or a placement? Open an issue.
 ```
 dotnet test tests/Jellyfin.Plugin.McuTimeline.Tests
 ./scripts/package.sh          # Jellyfin 10.11
-./scripts/package.sh 10.10    # or 10.9
+./scripts/package.sh 12       # or 10.10, 10.9
 ```
 
 The zip lands in `artifacts/`. Unzip it into `<config>/plugins/` and restart Jellyfin.
 
 Each release ships one build per Jellyfin version, numbered with the Jellyfin minor as last
-part: 1.1.0.9, 1.1.0.10, 1.1.0.11. Tag the GitHub release with the first three parts.
+part: 1.1.0.9, 1.1.0.10, 1.1.0.11, and 1.1.0.12 for Jellyfin 12. Tag the GitHub release with
+the first three parts.
 
 ## License
 

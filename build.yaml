@@ -2,8 +2,8 @@
 name: "MCU Timeline"
 guid: "7de48f79-4cdb-453f-8ce9-bd22c9e84f6a"
 # release number. Each Jellyfin version gets its own build, numbered with the Jellyfin
-# minor as fourth part: 1.1.0.9, 1.1.0.10, 1.1.0.11. The release pipeline and
-# scripts/package.sh set targetAbi and framework for each
+# minor as fourth part: 1.1.0.9, 1.1.0.10, 1.1.0.11, and 1.1.0.12 for Jellyfin 12. The
+# release pipeline and scripts/package.sh set targetAbi and framework for each
 version: "1.1.0"
 targetAbi: "10.11.0.0"
 framework: "net9.0"
@@ -29,4 +29,4 @@ changelog: |-
   New MCU collection with every title of the library, and its own poster and backdrop.
   The page, each playlist and the collection have their own switch in the settings, all off
   on a new install. Turning one off removes it from Jellyfin.
-  Works on Jellyfin 10.9, 10.10 and 10.11.
+  Works on Jellyfin 10.9, 10.10, 10.11 and 12.

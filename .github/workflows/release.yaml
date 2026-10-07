@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Release number from the tag
         id: version
@@ -34,10 +34,13 @@ jobs:
         run: |
           pip install --quiet jprm
           mkdir -p dist
-          for abi in 10.9 10.10 10.11; do
-            framework=net8.0
-            [ "$abi" = 10.11 ] && framework=net9.0
-            sed -i -E "s/^targetAbi: .*/targetAbi: \"$abi.0.0\"/; s/^framework: .*/framework: \"$framework\"/" build.yaml
+          for abi in 10.9 10.10 10.11 12; do
+            case "$abi" in
+              12) framework=net10.0; target_abi=12.0.0.0 ;;
+              10.11) framework=net9.0; target_abi=10.11.0.0 ;;
+              *) framework=net8.0; target_abi=$abi.0.0 ;;
+            esac
+            sed -i -E "s/^targetAbi: .*/targetAbi: \"$target_abi\"/; s/^framework: .*/framework: \"$framework\"/" build.yaml
             # JellyfinAbi reaches MSBuild as a property, it picks the packages to build against
             JellyfinAbi="$abi" jprm plugin build . \
               --version="${{ steps.version.outputs.version }}.${abi#10.}" \

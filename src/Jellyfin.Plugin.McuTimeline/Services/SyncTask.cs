@@ -38,7 +38,7 @@ public class SyncTask : IScheduledTask
     {
         yield return new TaskTriggerInfo
         {
-#if JELLYFIN_10_11
+#if JELLYFIN_10_11_OR_GREATER
             Type = TaskTriggerInfoType.IntervalTrigger,
 #else
             Type = TaskTriggerInfo.TriggerInterval,

@@ -2,7 +2,7 @@
 # Builds the plugin for one Jellyfin version into artifacts/McuTimeline_<version>.zip,
 # ready to be unzipped into <config>/plugins/ of a Jellyfin instance.
 #   ./scripts/package.sh          Jellyfin 10.11
-#   ./scripts/package.sh 10.10    or 10.9
+#   ./scripts/package.sh 12       or 10.10, 10.9
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -10,9 +10,10 @@ PROJECT="$ROOT/src/Jellyfin.Plugin.McuTimeline/Jellyfin.Plugin.McuTimeline.cspro
 
 ABI="${1:-10.11}"
 case "$ABI" in
-    10.11) FRAMEWORK=net9.0 ;;
-    10.9|10.10) FRAMEWORK=net8.0 ;;
-    *) echo "Unsupported Jellyfin version $ABI, expected 10.9, 10.10 or 10.11" >&2; exit 1 ;;
+    12) FRAMEWORK=net10.0; TARGET_ABI=12.0.0.0 ;;
+    10.11) FRAMEWORK=net9.0; TARGET_ABI=10.11.0.0 ;;
+    10.9|10.10) FRAMEWORK=net8.0; TARGET_ABI=$ABI.0.0 ;;
+    *) echo "Unsupported Jellyfin version $ABI, expected 10.9, 10.10, 10.11 or 12" >&2; exit 1 ;;
 esac
 
 # build.yaml is the single source of truth for the release number, the same file the
@@ -38,7 +39,7 @@ cat > "$STAGE/meta.json" <<META
     "description": "Marvel Cinematic Universe timeline in release or story order, with matching playlists and a collection.",
     "overview": "Marvel Cinematic Universe timeline, playlists and collection.",
     "owner": "cassien",
-    "targetAbi": "$ABI.0.0",
+    "targetAbi": "$TARGET_ABI",
     "framework": "$FRAMEWORK",
     "version": "$VERSION",
     "changelog": "",

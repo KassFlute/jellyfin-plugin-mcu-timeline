@@ -10,7 +10,7 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Playlists;
 using Microsoft.Extensions.Logging;
-#if JELLYFIN_10_11
+#if JELLYFIN_10_11_OR_GREATER
 using Jellyfin.Data;
 using Jellyfin.Database.Implementations.Enums;
 #endif

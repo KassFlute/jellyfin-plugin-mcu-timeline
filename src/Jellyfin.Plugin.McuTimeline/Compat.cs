@@ -1,5 +1,5 @@
 // what moved between the Jellyfin versions the plugin is built for, see JellyfinAbi in the csproj
-#if JELLYFIN_10_11
+#if JELLYFIN_10_11_OR_GREATER
 global using User = Jellyfin.Database.Implementations.Entities.User;
 #else
 global using User = Jellyfin.Data.Entities.User;
