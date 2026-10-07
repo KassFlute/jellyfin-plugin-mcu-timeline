@@ -2,12 +2,44 @@
     {
         "guid": "7de48f79-4cdb-453f-8ce9-bd22c9e84f6a",
         "name": "MCU Timeline",
-        "description": "Adds a timeline of the Marvel Cinematic Universe, in release or story order, showing what you own, what you have seen and what is missing. Keeps two matching playlists for the clients that cannot show the timeline.\n",
-        "overview": "Marvel Cinematic Universe timeline and playlists.",
+        "description": "Brings the Marvel Cinematic Universe into Jellyfin, in release or story order, matched with your library. Pick any of: a timeline page with Marvel filters, watch tracking and Jellyseerr requests, a playlist for each order, an MCU collection.\n",
+        "overview": "The Marvel Cinematic Universe in Jellyfin: timeline page, playlists, collection.",
         "owner": "cassien",
         "category": "General",
         "imageUrl": "https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timeline/main/logo.png",
         "versions": [
+            {
+                "version": "1.1.0.12",
+                "changelog": "The timeline can be dragged with the mouse, and the bar under it no longer gets stuck.\nPosters of missing titles load through Jellyfin, for networks that block TMDB.\nNew plugin image.\nNew MCU collection with every title of the library, and its own poster and backdrop.\nThe timeline page, each playlist and the collection have their own switch in the settings, all off on a new install. Playlists made by an earlier version stay on. Turning one off removes it from Jellyfin.\nWorks on Jellyfin 10.9, 10.10, 10.11 and 12.",
+                "targetAbi": "12.0.0.0",
+                "sourceUrl": "https://github.com/KassFlute/jellyfin-plugin-mcu-timeline/releases/download/v1.1.0/mcu-timeline_1.1.0.12.zip",
+                "checksum": "794fcf45225a46d49539bdc90bb20c05",
+                "timestamp": "2026-10-07T18:59:16Z"
+            },
+            {
+                "version": "1.1.0.11",
+                "changelog": "The timeline can be dragged with the mouse, and the bar under it no longer gets stuck.\nPosters of missing titles load through Jellyfin, for networks that block TMDB.\nNew plugin image.\nNew MCU collection with every title of the library, and its own poster and backdrop.\nThe timeline page, each playlist and the collection have their own switch in the settings, all off on a new install. Playlists made by an earlier version stay on. Turning one off removes it from Jellyfin.\nWorks on Jellyfin 10.9, 10.10, 10.11 and 12.",
+                "targetAbi": "10.11.0.0",
+                "sourceUrl": "https://github.com/KassFlute/jellyfin-plugin-mcu-timeline/releases/download/v1.1.0/mcu-timeline_1.1.0.11.zip",
+                "checksum": "227d4d9dd1944582061c4f4413b9f236",
+                "timestamp": "2026-10-07T18:59:10Z"
+            },
+            {
+                "version": "1.1.0.10",
+                "changelog": "The timeline can be dragged with the mouse, and the bar under it no longer gets stuck.\nPosters of missing titles load through Jellyfin, for networks that block TMDB.\nNew plugin image.\nNew MCU collection with every title of the library, and its own poster and backdrop.\nThe timeline page, each playlist and the collection have their own switch in the settings, all off on a new install. Playlists made by an earlier version stay on. Turning one off removes it from Jellyfin.\nWorks on Jellyfin 10.9, 10.10, 10.11 and 12.",
+                "targetAbi": "10.10.0.0",
+                "sourceUrl": "https://github.com/KassFlute/jellyfin-plugin-mcu-timeline/releases/download/v1.1.0/mcu-timeline_1.1.0.10.zip",
+                "checksum": "e9a2b1311f52b1e99cd3f48b1327d9a8",
+                "timestamp": "2026-10-07T18:59:00Z"
+            },
+            {
+                "version": "1.1.0.9",
+                "changelog": "The timeline can be dragged with the mouse, and the bar under it no longer gets stuck.\nPosters of missing titles load through Jellyfin, for networks that block TMDB.\nNew plugin image.\nNew MCU collection with every title of the library, and its own poster and backdrop.\nThe timeline page, each playlist and the collection have their own switch in the settings, all off on a new install. Playlists made by an earlier version stay on. Turning one off removes it from Jellyfin.\nWorks on Jellyfin 10.9, 10.10, 10.11 and 12.",
+                "targetAbi": "10.9.0.0",
+                "sourceUrl": "https://github.com/KassFlute/jellyfin-plugin-mcu-timeline/releases/download/v1.1.0/mcu-timeline_1.1.0.9.zip",
+                "checksum": "e53808facb2166b9530bf00ef51edc44",
+                "timestamp": "2026-10-07T18:58:52Z"
+            },
             {
                 "version": "1.0.1.0",
                 "changelog": "The title card keeps the same size whatever the title, so the timeline no longer jumps.\nWatched titles in a row are joined by a green line on the timeline.\nTitles missing from the library can be marked as watched.\nAny title can be skipped: it leaves the progression and the green line carries on over it.",
