@@ -12,6 +12,8 @@ Works on Jellyfin 10.9, 10.10, 10.11 and 12. Each server gets the build made for
 
 The timeline page needs [Plugin Pages](https://github.com/IAmParadox27/jellyfin-plugin-pages)
 and [File Transformation](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation).
+They have no build for Jellyfin 10.9, so there the plugin keeps the playlists and the
+collection only.
 
 1. In Dashboard, Plugins, Repositories, add
    ```

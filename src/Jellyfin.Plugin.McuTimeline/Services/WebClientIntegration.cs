@@ -19,19 +19,26 @@ public sealed class WebClientIntegration : IHostedService
     public const string PageId = "mcu-timeline";
 
     private const string PluginPagesInterface = "Jellyfin.Plugin.PluginPages.PluginInterface";
+
+    // Plugin Pages 2.x, the only one for Jellyfin 10.10, takes pages through a service instead
+    private const string LegacyPagesManager = "Jellyfin.Plugin.PluginPages.Library.IPluginPagesManager";
+    private const string LegacyPage = "Jellyfin.Plugin.PluginPages.Library.PluginPage";
     private const string FileTransformationInterface = "Jellyfin.Plugin.FileTransformation.PluginInterface";
 
     // fixed, so a restart replaces the transformation instead of adding a second one
     private static readonly Guid _transformationId = Guid.Parse("4f0d7c39-2a8e-4b7e-9a51-6c1e0b8a2d17");
 
+    private readonly IServiceProvider _services;
     private readonly ILogger<WebClientIntegration> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WebClientIntegration"/> class.
     /// </summary>
+    /// <param name="services">Server services, where Plugin Pages 2.x registers its manager.</param>
     /// <param name="logger">Logger.</param>
-    public WebClientIntegration(ILogger<WebClientIntegration> logger)
+    public WebClientIntegration(IServiceProvider services, ILogger<WebClientIntegration> logger)
     {
+        _services = services;
         _logger = logger;
     }
 
@@ -66,6 +73,17 @@ public sealed class WebClientIntegration : IHostedService
             ["isEnabledMethod"] = nameof(McuTimelinePageAvailability.IsEnabled)
         });
 
+        if (!pageRegistered && FindType(LegacyPagesManager) is { } managerType)
+        {
+            // no visibility callback in 2.x: listed only when menu.js cannot add the entry
+            // itself, and only if switched on when the server starts
+            pageRegistered = true;
+            if (!MenuInjected && PluginSettings.Current.ShowInPluginPages)
+            {
+                RegisterLegacyPage(managerType);
+            }
+        }
+
         if (!pageRegistered)
         {
             _logger.LogInformation("[MCU Timeline] Plugin Pages not installed, the timeline has no page in the web client.");
@@ -83,13 +101,32 @@ public sealed class WebClientIntegration : IHostedService
     /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
+    private static Type? FindType(string name) => AssemblyLoadContext.All
+        .SelectMany(context => context.Assemblies)
+        .Select(assembly => assembly.GetType(name, throwOnError: false))
+        .FirstOrDefault(t => t is not null);
+
+    private void RegisterLegacyPage(Type managerType)
+    {
+        var manager = _services.GetService(managerType);
+        var register = managerType.GetMethod("RegisterPluginPage");
+        if (manager is null || register is null || managerType.Assembly.GetType(LegacyPage) is not { } pageType
+            || Activator.CreateInstance(pageType) is not { } page)
+        {
+            _logger.LogWarning("[MCU Timeline] Plugin Pages found, but not in a version the timeline knows.");
+            return;
+        }
+
+        pageType.GetProperty("Id")?.SetValue(page, PageId);
+        pageType.GetProperty("Url")?.SetValue(page, "/McuTimeline/page");
+        pageType.GetProperty("DisplayText")?.SetValue(page, "Univers Marvel");
+        pageType.GetProperty("Icon")?.SetValue(page, "timeline");
+        register.Invoke(manager, [page]);
+    }
+
     private bool Register(string interfaceType, string methodName, Dictionary<string, string> payload)
     {
-        var type = AssemblyLoadContext.All
-            .SelectMany(context => context.Assemblies)
-            .Select(assembly => assembly.GetType(interfaceType, throwOnError: false))
-            .FirstOrDefault(t => t is not null);
-        var method = type?.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
+        var method = FindType(interfaceType)?.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
         var payloadType = method?.GetParameters().SingleOrDefault()?.ParameterType;
 
         // both plugins take a Newtonsoft JObject, built through its own Parse so this
