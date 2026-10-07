@@ -45,7 +45,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
 
     /// <inheritdoc />
     public override string Description =>
-        "Marvel Cinematic Universe timeline in release or story order, with matching playlists and a collection.";
+        "The Marvel Cinematic Universe in Jellyfin: timeline page, playlists and collection.";
 
     /// <inheritdoc />
     public IEnumerable<PluginPageInfo> GetPages()

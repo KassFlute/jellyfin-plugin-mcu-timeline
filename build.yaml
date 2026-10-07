@@ -8,11 +8,11 @@ version: "1.1.0"
 targetAbi: "10.11.0.0"
 framework: "net9.0"
 owner: "cassien"
-overview: "Marvel Cinematic Universe timeline, playlists and collection."
+overview: "The Marvel Cinematic Universe in Jellyfin: timeline page, playlists, collection."
 description: >
-  Adds a timeline of the Marvel Cinematic Universe, in release or story order, showing what
-  you own, what you have seen and what is missing. Can also keep a playlist for each order
-  and an MCU collection, for the clients that cannot show the timeline.
+  Brings the Marvel Cinematic Universe into Jellyfin, in release or story order, matched with
+  your library. Pick any of: a timeline page with Marvel filters, watch tracking and
+  Jellyseerr requests, a playlist for each order, an MCU collection.
 
 category: "General"
 imageUrl: "https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timeline/main/logo.png"
