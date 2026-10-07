@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timeline/main/logo.png",
         "versions": [
             {
+                "version": "1.0.1.0",
+                "changelog": "The title card keeps the same size whatever the title, so the timeline no longer jumps.\nWatched titles in a row are joined by a green line on the timeline.\nTitles missing from the library can be marked as watched.\nAny title can be skipped: it leaves the progression and the green line carries on over it.",
+                "targetAbi": "10.11.0.0",
+                "sourceUrl": "https://github.com/KassFlute/jellyfin-plugin-mcu-timeline/releases/download/v1.0.1.0/mcu-timeline_1.0.1.0.zip",
+                "checksum": "bb806640193ebdca42d96e4eadcd84d7",
+                "timestamp": "2026-10-06T19:50:40Z"
+            },
+            {
                 "version": "1.0.0.0",
                 "changelog": "First release.",
                 "targetAbi": "10.11.0.0",
