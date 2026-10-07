@@ -35,6 +35,10 @@ jobs:
           pip install --quiet jprm
           mkdir -p dist
           for abi in 10.9 10.10 10.11 12; do
+            # JPRM rewrites the csproj and cleans without restoring, so each build starts
+            # from a clean tree: a restore left for another framework fails the clean
+            git checkout -- .
+            git clean -fdxq -- src
             case "$abi" in
               12) framework=net10.0; target_abi=12.0.0.0 ;;
               10.11) framework=net9.0; target_abi=10.11.0.0 ;;

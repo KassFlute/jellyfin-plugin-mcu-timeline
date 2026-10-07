@@ -23,7 +23,5 @@ changelog: |-
   Posters of missing titles load through Jellyfin, for networks that block TMDB.
   New plugin image.
   New MCU collection with every title of the library, and its own poster and backdrop.
-  The timeline page, each playlist and the collection have their own switch in the settings,
-  all off on a new install. Playlists made by an earlier version stay on. Turning one off
-  removes it from Jellyfin.
+  The timeline page, each playlist and the collection have their own switch in the settings, all off on a new install. Playlists made by an earlier version stay on. Turning one off removes it from Jellyfin.
   Works on Jellyfin 10.9, 10.10, 10.11 and 12.
