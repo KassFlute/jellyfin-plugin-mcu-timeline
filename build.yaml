@@ -4,7 +4,7 @@ guid: "7de48f79-4cdb-453f-8ce9-bd22c9e84f6a"
 # release number. Each Jellyfin version gets its own build, numbered with the Jellyfin
 # minor as fourth part: 1.1.0.9, 1.1.0.10, 1.1.0.11, and 1.1.0.12 for Jellyfin 12. The
 # release pipeline and scripts/package.sh set targetAbi and framework for each
-version: "1.1.0"
+version: "1.1.1"
 targetAbi: "10.11.0.0"
 framework: "net9.0"
 owner: "cassien"
@@ -19,9 +19,4 @@ imageUrl: "https://raw.githubusercontent.com/KassFlute/jellyfin-plugin-mcu-timel
 artifacts:
   - "Jellyfin.Plugin.McuTimeline.dll"
 changelog: |-
-  The timeline can be dragged with the mouse, and the bar under it no longer gets stuck.
-  Posters of missing titles load through Jellyfin, for networks that block TMDB.
-  New plugin image.
-  New MCU collection with every title of the library, and its own poster and backdrop.
-  The timeline page, each playlist and the collection have their own switch in the settings, all off on a new install. Playlists made by an earlier version stay on. Turning one off removes it from Jellyfin.
-  Works on Jellyfin 10.9, 10.10, 10.11 and 12.
+  Story order: Iron Man 3 now comes before Thor: The Dark World, as its Christmas 2012 setting says.

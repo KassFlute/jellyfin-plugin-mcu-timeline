@@ -1,5 +1,5 @@
 {
-  "version": "2026.10.2",
+  "version": "2026.10.3",
   "items": [
     {
       "id": "eyes-of-wakanda",
@@ -229,7 +229,7 @@
       "type": "movie",
       "tmdbId": 68721,
       "releaseDate": "2013-05-03",
-      "chronoOrder": 140,
+      "chronoOrder": 125,
       "storyYear": "2012",
       "phase": 2,
       "saga": "infinity",
